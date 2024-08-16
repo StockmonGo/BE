@@ -1,0 +1,6 @@
+rootProject.name = 'stockmon-be'
+
+include ':commons'
+include ':auth'
+include ':core'
+include ':map'
