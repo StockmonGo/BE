@@ -1,5 +1,7 @@
 package com.pda.commons.security.config;
 
+import com.pda.commons.security.jwt.JWTFilter;
+import com.pda.commons.security.jwt.JWTUtil;
 import com.pda.commons.security.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +20,12 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration){
-        this.authenticationConfiguration = authenticationConfiguration;
-    }
+    private final JWTUtil jwtUtil;
 
+    SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil){
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
+    }
     //AuthenticationManager Bean 등록
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -51,9 +55,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/signin", "/", "/api/users/join").permitAll()
                         .anyRequest().authenticated());
 
+        //커스텀한 새로운 필터 추가
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+
         //필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) -> session

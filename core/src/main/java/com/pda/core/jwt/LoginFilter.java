@@ -1,6 +1,7 @@
-package com.pda.commons.security.jwt;
+package com.pda.core.jwt;
 
-import com.pda.commons.security.DTO.CustomUserDetails;
+import com.pda.commons.security.jwt.JWTUtil;
+import com.pda.core.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,11 +18,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    public LoginFilter(AuthenticationManager authenticationManager) {
+    private final JWTUtil jwtUtil;
 
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil){
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {

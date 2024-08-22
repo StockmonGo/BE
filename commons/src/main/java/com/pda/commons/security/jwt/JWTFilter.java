@@ -42,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        Integer id = jwtUtil.getId(token);
+        Long id = jwtUtil.getId(token);
         String role = jwtUtil.getRole(token);
 
         JWTTmp jwtTmp = new JWTTmp(id, role);
