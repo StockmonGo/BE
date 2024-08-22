@@ -7,4 +7,5 @@ public interface TravelerRepository extends JpaRepository<Traveler, Long> {
     Boolean existsByNickname(String nickname);
 
     Traveler findByNickname(String nickname);
+
 }
