@@ -44,6 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         Long id = jwtUtil.getId(token);
         String role = jwtUtil.getRole(token);
+        System.out.println(role);
 
         JWTTmp jwtTmp = new JWTTmp(id, role);
         Authentication authToken = new UsernamePasswordAuthenticationToken(jwtTmp, null, List.of(new SimpleGrantedAuthority(role)));

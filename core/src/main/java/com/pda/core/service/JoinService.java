@@ -29,7 +29,7 @@ public class JoinService {
         Traveler traveler = new Traveler();
 
         traveler.setNickname(nickname);
-        traveler.setPassword(password);
+        traveler.setPassword(bCryptPasswordEncoder.encode(password));
         traveler.setRole("ROLE_USER");
         travelerRepository.save(traveler);
     }
