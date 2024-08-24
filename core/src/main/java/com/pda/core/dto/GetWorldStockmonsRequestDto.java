@@ -11,6 +11,7 @@ import static com.pda.core.exception.ExceptionMessage.OUT_OF_WORLD_RANGE;
 @Getter
 @RequiredArgsConstructor
 public class GetWorldStockmonsRequestDto {
+
     @DecimalMin(value = "37.42928001105901", message = OUT_OF_WORLD_RANGE)
     @DecimalMax(value = "37.73892900008836", message = OUT_OF_WORLD_RANGE)
     private final double latitude;
