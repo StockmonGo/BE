@@ -1,16 +1,35 @@
 package com.pda.core.dto;
 
+import com.pda.core.entity.Stock;
+import com.pda.core.entity.Stockmon;
+import com.pda.core.entity.TravelerStockmon;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class TravelerStockmonDto {
 
     private Long id;
     private String name;
     private String imgUrl;
-    private long count;
+    private Long count;
     private String stockCode;
     private Double stockAveragePrice;
+
+    public static TravelerStockmonDto fromEntity(TravelerStockmon travelerStockmon) {
+
+        Stockmon stockmon = travelerStockmon.getStockmon();
+        Stock stock = stockmon.getStock();
+
+        return TravelerStockmonDto.builder()
+                .id(stockmon.getId())
+                .name(stock.getName())
+                .imgUrl(stockmon.getImgUrl())
+                .count(travelerStockmon.getStockmonCount())
+                .stockCode(stock.getCode())
+                .stockAveragePrice(travelerStockmon.getStockmonAveragePrice())
+                .build();
+    }
+
 }

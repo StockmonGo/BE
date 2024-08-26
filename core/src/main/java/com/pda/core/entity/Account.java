@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class Account {
 
     @Id
@@ -24,8 +24,5 @@ public class Account {
     @OneToMany(mappedBy = "account")
     @JsonIgnoreProperties("account")
     private List<AccountStock> accountStocks = new ArrayList<>();
-
-    public Account() {
-    }
 
 }

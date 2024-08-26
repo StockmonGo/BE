@@ -1,6 +1,5 @@
 package com.pda.core.entity;
 
-
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,4 +15,5 @@ public class World {
     private final Boolean isCaught;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+
 }
