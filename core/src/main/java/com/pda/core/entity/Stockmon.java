@@ -43,5 +43,4 @@ public class Stockmon {
     @JsonIgnoreProperties("stockmon")
     private List<TravelerStockmon> trvelerStockmons = new ArrayList<>();
 
-
 }

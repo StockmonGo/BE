@@ -29,40 +29,20 @@ public class TravelerStockmonService {
     }
 
 
-    // 특정 여행자의 모든 스톡몬 정보를 조회하는 메서드
     @Transactional
     public GetStockmonListResponseDto getStockmonsByTravelerId(Long travelerId) {
 
         List<TravelerStockmon> travelerStockmons = travelerStockmonRepository.findByTravelerId(travelerId);
 
-        List<TravelerStockmonDto> stockmonDtos = new ArrayList<>();
+        List<TravelerStockmonDto> travelerStockmonDtos = new ArrayList<>();
 
         for (TravelerStockmon travelerStockmon : travelerStockmons) {
-            TravelerStockmonDto dto = convertToTravelerStockmonDto(travelerStockmon);
-            stockmonDtos.add(dto);
+            TravelerStockmonDto dto = TravelerStockmonDto.fromEntity(travelerStockmon);
+            travelerStockmonDtos.add(dto);
         }
 
-        return new GetStockmonListResponseDto(stockmonDtos);
+        return new GetStockmonListResponseDto(travelerStockmonDtos);
 
     }
 
-    // TravelerStockmon 엔티티를 TravelerStockmonDto로 변환하는 메서드
-    private TravelerStockmonDto convertToTravelerStockmonDto(TravelerStockmon travelerStockmon) {
-
-        Stockmon stockmon = travelerStockmon.getStockmon();
-
-        Stock stock = stockmon.getStock();
-
-        TravelerStockmonDto dto = new TravelerStockmonDto();
-
-        // 4. TravelerStockmon, Stockmon, Stock 엔티티의 정보를 DTO에 설정
-        dto.setId(stockmon.getId());
-        dto.setName(stock.getName());
-        dto.setImgUrl(stockmon.getImgUrl());
-        dto.setCount(travelerStockmon.getStockmonCount());
-        dto.setStockCode(stock.getCode());
-        dto.setStockAveragePrice(travelerStockmon.getStockmonAveragePrice());
-
-        return dto;
-    }
 }
