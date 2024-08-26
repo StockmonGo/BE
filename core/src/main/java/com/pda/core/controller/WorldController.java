@@ -8,7 +8,6 @@ import com.pda.core.dto.WorldStockmonDto;
 import com.pda.core.entity.StockTower;
 import com.pda.core.entity.Stockmon;
 import com.pda.core.entity.World;
-import com.pda.core.service.StockService;
 import com.pda.core.service.StockTowerService;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.WorldService;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,15 +35,17 @@ public class WorldController {
 
     @PostMapping("/stockmons")
     @Operation(summary = "주변 스톡몬, 스톡타워 조회")
-    public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
+    public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(/*@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto*/) {
         List<World> worlds = worldService.getNearWorlds();
         List<StockTower> stockTowers = stockTowerService.getNearStockTowers();
         List<WorldStockmonDto> worldStockmonDtos = new ArrayList<>();
-
-        for(World world : worlds) {
-            Stockmon stockmon = stockmonService.getStockmon(world.getStockmonId());
-            WorldStockmonDto worldStockmonDto = new WorldStockmonDto(world.getId(), stockmon.getImgUrl(), world.getLatitude(), world.getLongitude());
-            worldStockmonDtos.add(worldStockmonDto);
+        if(worlds != null) {
+            for (World world : worlds) {
+                Stockmon stockmon = stockmonService.getStockmon(world.getStockmonId());
+                WorldStockmonDto worldStockmonDto = new WorldStockmonDto(world.getId(), stockmon.getImgUrl(),
+                        world.getLatitude(), world.getLongitude());
+                worldStockmonDtos.add(worldStockmonDto);
+            }
         }
 
         return ResponseEntity.ok(SuccessResponse

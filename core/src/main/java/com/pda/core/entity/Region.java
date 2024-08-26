@@ -1,7 +1,10 @@
 package com.pda.core.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockTower {
+public class Region {
 
     @Id
     private Long id;
@@ -23,9 +26,11 @@ public class StockTower {
 
     private Double longitude;
 
-    private String imgUrl;
+    private Integer radius;
 
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "stock_type_id")
+    private StockType stocktype;
 
     private LocalDateTime createdAt;
 
