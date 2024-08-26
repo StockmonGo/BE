@@ -1,23 +1,45 @@
 package com.pda.core.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.util.Date;
-
+@Entity
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class Stockmon {
 
-    private final long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    private final String imgUrl;
-    private final String logoUrl;
-    private final long stockId;
-    private final String description;
-    private final double appearanceProbability;
+    private String imgUrl;
 
-    private final Date createdAt;
-    private final Date updatedAt;
+    private String logoUrl;
+
+    @OneToOne
+    private Stock stock;
+
+    private String description;
+
+    private double appearanceProbability;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "stockmon")
+    @JsonIgnoreProperties("stockmon")
+    private List<TravelerStockmon> trvelerStockmons = new ArrayList<>();
+
+
 }

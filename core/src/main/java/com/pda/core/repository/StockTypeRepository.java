@@ -3,6 +3,7 @@ package com.pda.core.repository;
 
 import com.pda.core.entity.StockType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,7 @@ public class StockTypeRepository {
     public StockTypeRepository() {
         stockTypes = new ArrayList<>();
 
-        stockTypes.add(new StockType(1, "금융", new Date(), new Date()));
+        stockTypes.add(new StockType(1, "금융", LocalDateTime.now(), LocalDateTime.now()));
     }
 
     public Optional<StockType> findById(long id) {

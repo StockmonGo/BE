@@ -1,24 +1,33 @@
 package com.pda.core.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
-public class StockTower {
+public class Region {
 
-    private long id;
+    private Long id;
+
     private String name;
+
     private double latitude;
+
     private double longitude;
-    private String imgUrl;
-    private String description;
+
+    private Integer radius;
+
+    @ManyToOne
+    @JoinColumn(name = "stock_type_id")
+    private StockType stocktype;
 
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
 }
