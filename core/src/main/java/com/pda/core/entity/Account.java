@@ -6,12 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+//@NoArgsConstructor
 public class Account {
 
     @Id
@@ -22,5 +24,8 @@ public class Account {
     @OneToMany(mappedBy = "account")
     @JsonIgnoreProperties("account")
     private List<AccountStock> accountStocks = new ArrayList<>();
+
+    public Account() {
+    }
 
 }

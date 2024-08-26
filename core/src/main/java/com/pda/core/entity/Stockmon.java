@@ -12,15 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class Stockmon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String imgUrl;
 
@@ -31,7 +33,7 @@ public class Stockmon {
 
     private String description;
 
-    private double appearanceProbability;
+    private Double appearanceProbability;
 
     private LocalDateTime createdAt;
 

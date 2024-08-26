@@ -8,9 +8,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class TravelerStockmon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +20,7 @@ public class TravelerStockmon {
 
     private Long stockmonCount;
 
-    private double stockmonAveragePrice;
+    private Double stockmonAveragePrice;
 
     @ManyToOne
     @JoinColumn(name = "traveler_id")

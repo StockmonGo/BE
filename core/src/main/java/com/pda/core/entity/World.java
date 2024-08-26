@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class World {
 
-    private final long id;
-    private final double latitude;
-    private final double longitude;
-    private final long stockmonId;
-    private final boolean isCaught;
+    private final Long id;
+    private final Double latitude;
+    private final Double longitude;
+    private final Long stockmonId;
+    private final Boolean isCaught;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 }

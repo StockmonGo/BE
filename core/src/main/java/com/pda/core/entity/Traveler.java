@@ -14,17 +14,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.grammars.hql.HqlParser.LocalDateTimeContext;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Traveler {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Size(max=10)
     private String nickname;
