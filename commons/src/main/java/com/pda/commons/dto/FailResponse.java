@@ -1,9 +1,8 @@
 package com.pda.commons.dto;
 
+import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Date;
 
 @Getter
 @Builder
