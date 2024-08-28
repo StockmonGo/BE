@@ -1,19 +1,21 @@
 package com.pda.core.entity;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class World {
 
-    private final Long id;
-    private final Double latitude;
-    private final Double longitude;
-    private final Long stockmonId;
-    private final Boolean isCaught;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private  Long id;
+    private  Double latitude;
+    private  Double longitude;
+    private  Long stockmonId;
+    private  Boolean isCaught;
+//    private LocalDateTime createdAt;
+//    private LocalDateTime updatedAt;
 
 }
