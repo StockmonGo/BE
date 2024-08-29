@@ -92,8 +92,37 @@ public class WebSocketEventListener {
         dumyMessage.header = header;
         dumyMessage.body = body;
 
-
     }
+
+    public void connectStock(String stockCode) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        WebSocketMessage dumyMessage = new WebSocketMessage();
+
+        Header header = new Header();
+        header.appkey = appKey;
+        header.appsecret = appSecret;
+        header.custtype = "P";
+        header.tr_type = "1";
+        header.content_type = "utf-8";
+
+        Body body = new Body();
+        Input input = new Input();
+
+        input.tr_id = "H0STCNT0";
+        input.tr_key = stockCode;
+        System.out.println("tr_key: "+input.tr_key
+        );
+        body.input=input;
+
+        dumyMessage.header = header;
+        dumyMessage.body = body;
+
+        // JSON 객체를 문자열로 변환합니다.
+        String jsonMessage = objectMapper.writeValueAsString(dumyMessage);
+        webSession.sendMessage(new TextMessage(jsonMessage));
+    }
+
 
 
 
