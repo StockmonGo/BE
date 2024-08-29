@@ -24,8 +24,18 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 public class WebSocketEventListener {
+    private int num=0;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final Map<String, String> sessionIdToUserMap = new ConcurrentHashMap<>();
 
 
+
+
+
+    @Autowired
+    public WebSocketEventListener(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
 
 
 
