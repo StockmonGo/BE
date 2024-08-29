@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TravelerRepository extends JpaRepository<Traveler, Long> {
     Optional<Traveler> findByNickname(String nickname);
+    Optional<Traveler> findByAccountId(Long accountId);
 }

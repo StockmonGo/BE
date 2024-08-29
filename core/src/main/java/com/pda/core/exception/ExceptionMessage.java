@@ -7,4 +7,6 @@ public class ExceptionMessage {
 
     public static final String NO_TRAVELER = "사용자 없음";
 
+    public static final String HAS_ACCOUNT = "이미 계좌가 존재";
+
 }
