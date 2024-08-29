@@ -31,6 +31,8 @@ public class WebSocketEventListener {
     private final Map<String,String> socketData = new ConcurrentHashMap<>();
     // 종목코드, 주가
 
+    private WebSocketSession webSession;
+    // 웹 소켓 세션
 
 
 
