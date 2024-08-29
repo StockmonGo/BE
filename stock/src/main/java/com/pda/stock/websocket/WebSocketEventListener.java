@@ -34,7 +34,12 @@ public class WebSocketEventListener {
     private WebSocketSession webSession;
     // 웹 소켓 세션
 
+    @Value(value = "${stock.app.key}")
+    private String appKey;
 
+    @Value(value = "${stock.app.sercret}")
+    private String appSecret;
+    // 종목코드, 유저세션
 
 
 
