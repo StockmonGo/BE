@@ -123,6 +123,34 @@ public class WebSocketEventListener {
         webSession.sendMessage(new TextMessage(jsonMessage));
     }
 
+    @EventListener
+    public void handleWebSocketConnectListener(SessionConnectedEvent event) throws IOException, ExecutionException, InterruptedException {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+
+        String sessionId = headerAccessor.getSessionId();
+        String userName = sessionId; // 예시로 세션 ID를 사용자 이름으로 사용
+
+
+        System.out.println(headerAccessor.getSessionId());
+        if(num==0){
+            sessionIdToUserMap.put( "/topic/greetings",sessionId);
+            connectSocket("024110");
+            connectStock("024110");
+            num++;
+            System.out.println("num=0");
+
+        }else{
+            sessionIdToUserMap.put("/content/chart",sessionId);
+            connectStock("105560");
+            System.out.println("num=1");
+        }
+        System.out.println("handleWebSocketConnectListener"+sessionId);
+
+
+        System.out.println("New WebSocket connection established. Session ID: " + sessionId);
+
+    }
+
 
 
 
