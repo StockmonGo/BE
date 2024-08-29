@@ -42,11 +42,57 @@ public class WebSocketEventListener {
     // 종목코드, 유저세션
 
 
-
-
     @Autowired
     public WebSocketEventListener(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
+    }
+
+    public void connectSocket(String stockCode) throws ExecutionException, InterruptedException, IOException {
+        StandardWebSocketClient client = new StandardWebSocketClient();
+        webSession = client.execute(new TextWebSocketHandler() {
+            @Override
+            protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+                if(message.getPayload().contains("{")){
+
+                }else{
+                    String[] stockInfos=message.getPayload().split("\\|")[3].split("\\^");
+                    System.out.println("value: "+stockInfos[0]);
+                    socketData.put(stockInfos[0],stockInfos[1]);
+
+                }
+
+                System.out.println("Received message: " + message.getPayload().contains("{"));
+
+            }
+        }, "ws://ops.koreainvestment.com:21000").get();
+
+
+        // ObjectMapper를 사용하여 JSON 데이터를 문자열로 변환합니다.
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        WebSocketMessage dumyMessage = new WebSocketMessage();
+
+        Header header = new Header();
+        header.appkey = appKey;
+        header.appsecret=appSecret;
+        header.custtype = "P";
+        header.tr_type = "1";
+        header.content_type = "utf-8";
+
+        Body body = new Body();
+        Input input = new Input();
+
+        input.tr_id = "H0STCNT0";
+        input.tr_key = stockCode;
+        System.out.println("tr_key: "+input.tr_key
+        );
+        body.input=input;
+
+        dumyMessage.header = header;
+        dumyMessage.body = body;
+
+
     }
 
 
