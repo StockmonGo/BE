@@ -5,6 +5,7 @@ import static com.pda.core.exception.ExceptionMessage.NO_TRAVELER;
 
 import com.pda.core.dto.AccountCheckResponseDto;
 import com.pda.core.dto.AccountDto;
+import com.pda.core.dto.HasAccountResponseDto;
 import com.pda.core.entity.Account;
 import com.pda.core.entity.Traveler;
 import com.pda.core.exception.HasAccountException;
@@ -56,7 +57,15 @@ public class AccountService {
         return new AccountCheckResponseDto(hasAccount);
     }
 
+    public HasAccountResponseDto getUserProfile(Long travelerId) {
+        Traveler traveler = travelerRepository.findById(travelerId)
+                .orElseThrow(() -> new NoTravelerException(
+                        HttpStatus.BAD_REQUEST, NO_TRAVELER));
+        return HasAccountResponseDto.fromTraveler(traveler);
+    }
+
     private String generateAccountNumber() {
+        // TODO: 어떤 형식으로 계좌를 발급할지 고민
         return "000-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
