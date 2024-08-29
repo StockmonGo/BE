@@ -1,7 +1,7 @@
 package com.pda.stock.websocket;
 
-import com.pda.stock.entity.Body;
-import com.pda.stock.entity.Header;
+import com.pda.stock.dto.Body;
+import com.pda.stock.dto.Header;
 
 public class WebSocketMessage {
 
