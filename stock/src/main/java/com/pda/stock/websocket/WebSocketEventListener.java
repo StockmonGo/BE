@@ -28,6 +28,11 @@ public class WebSocketEventListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> sessionIdToUserMap = new ConcurrentHashMap<>();
 
+    private final Map<String,String> socketData = new ConcurrentHashMap<>();
+    // 종목코드, 주가
+
+
+
 
 
 
