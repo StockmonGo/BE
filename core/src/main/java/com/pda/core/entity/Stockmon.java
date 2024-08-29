@@ -41,6 +41,6 @@ public class Stockmon {
 
     @OneToMany(mappedBy = "stockmon")
     @JsonIgnoreProperties("stockmon")
-    private List<TravelerStockmon> trvelerStockmons = new ArrayList<>();
+    private List<TravelerStockmon> travelerStockmons = new ArrayList<>();
 
 }
