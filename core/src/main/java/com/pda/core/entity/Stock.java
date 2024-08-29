@@ -1,16 +1,9 @@
 package com.pda.core.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,9 +30,6 @@ public class Stock {
 
     private  LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "stock")
-    @JsonIgnoreProperties("stock")
-    private List<Stockmon> stockmons = new ArrayList<>();
 
     public Stock(long id, String name, String code, StockType stockType, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
