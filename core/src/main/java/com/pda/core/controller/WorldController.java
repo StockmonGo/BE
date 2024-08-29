@@ -35,14 +35,14 @@ public class WorldController {
 
     @PostMapping("/stockmons")
     @Operation(summary = "주변 스톡몬, 스톡타워 조회")
-    public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(/*@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto*/) {
-        List<World> worlds = worldService.getNearWorlds();
-        List<StockTower> stockTowers = stockTowerService.getNearStockTowers();
+    public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
+        List<World> worlds = worldService.getNearWorlds(getWorldStockmonsRequestDto);
+        List<StockTower> stockTowers = stockTowerService.getNearStockTowers(getWorldStockmonsRequestDto);
         List<WorldStockmonDto> worldStockmonDtos = new ArrayList<>();
         if(worlds != null) {
             for (World world : worlds) {
                 Stockmon stockmon = stockmonService.getStockmon(world.getStockmonId());
-                WorldStockmonDto worldStockmonDto = new WorldStockmonDto(world.getId(), stockmon.getImgUrl(),
+                WorldStockmonDto worldStockmonDto = new WorldStockmonDto(world.getId(), stockmon.getId(),
                         world.getLatitude(), world.getLongitude());
                 worldStockmonDtos.add(worldStockmonDto);
             }
@@ -55,4 +55,5 @@ public class WorldController {
                         .timestamp(new Date())
                 .build());
     }
+
 }

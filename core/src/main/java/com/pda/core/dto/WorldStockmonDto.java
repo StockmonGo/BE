@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorldStockmonDto {
     private final long id;
-    private final String imgUrl;
+    private final long stockmon_id;
     private final double latitude;
     private final double longitude;
 }
