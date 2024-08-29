@@ -151,7 +151,15 @@ public class WebSocketEventListener {
 
     }
 
+    @EventListener
+    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) throws IOException {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        String sessionId = headerAccessor.getSessionId();
+        System.out.println("handleWebSocketDisconnectListener"+sessionId);
 
-
+        sessionIdToUserMap.remove(sessionId);
+        socketData.remove(sessionId);
+        num--;
+    }
 
 }
