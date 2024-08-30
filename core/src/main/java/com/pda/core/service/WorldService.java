@@ -66,7 +66,8 @@ public class WorldService {
         return true;
     }
 
-    @Scheduled(cron = "0 * * * * *")
+
+    @Scheduled(cron = "0 0 * * * *")
     public void setWorld() throws JsonProcessingException {
         List<Object> list = new ArrayList<>();
         long count = 0;
