@@ -24,6 +24,8 @@ public class Stockmon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String imgUrl;
 
     private String logoUrl;
