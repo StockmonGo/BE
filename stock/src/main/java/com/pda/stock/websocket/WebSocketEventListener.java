@@ -1,14 +1,16 @@
 package com.pda.stock.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pda.stock.entity.Body;
-import com.pda.stock.entity.Header;
-import com.pda.stock.entity.Input;
+import com.pda.stock.dto.Body;
+import com.pda.stock.dto.Header;
+import com.pda.stock.dto.Input;
+import com.pda.stock.dto.StockPriceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -161,5 +163,30 @@ public class WebSocketEventListener {
         socketData.remove(sessionId);
         num--;
     }
+
+    @Scheduled(fixedRate = 500)
+    public void send(){
+        int num=0;
+        synchronized(sessionIdToUserMap){
+            for (String stockCode : sessionIdToUserMap.keySet()) {
+                String session = sessionIdToUserMap.get(stockCode);
+
+
+                System.out.println("send: "+stockCode);
+                if(num==0){
+                    System.out.println("socketData: "+socketData.get("105560"));
+                    num++;
+                }else{
+                    System.out.println("socketData: "+socketData.get("024110"));
+                    num--;
+                }
+
+
+
+                messagingTemplate.convertAndSend(stockCode, new StockPriceDto(session));
+            }
+        }
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.pda.stock.entity;
+package com.pda.stock.dto;
 
 public class Header {
     public String appkey;
