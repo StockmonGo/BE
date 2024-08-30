@@ -1,13 +1,17 @@
 package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
+import com.pda.core.dto.GetStockmonDetailResponseDto;
 import com.pda.core.dto.GetStockmonListResponseDto;
 import com.pda.core.dto.GetWorldStockmonsResponseDto;
+import com.pda.core.service.StockmonService;
 import com.pda.core.service.TravelerStockmonService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.LocalDateTime;
 import java.util.Date;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TravelerStockmonController {
 
     private final TravelerStockmonService travelerStockmonService;
+    private final StockmonService stockmonService;
 
-    public TravelerStockmonController(TravelerStockmonService travelerStockmonService) {
+    public TravelerStockmonController(TravelerStockmonService travelerStockmonService, StockmonService stockmonService) {
         this.travelerStockmonService = travelerStockmonService;
+        this.stockmonService = stockmonService;
     }
 
     @GetMapping("/stockmons")
@@ -33,6 +39,19 @@ public class TravelerStockmonController {
                 .timestamp(new Date())
                 .build()
         );
+    }
+
+    @GetMapping("/stockmons/{id}")
+    @Operation(summary = "스톡몬 상세 정보 조회")
+    public ResponseEntity<SuccessResponse<GetStockmonDetailResponseDto>> getStockmonDetail(@PathVariable("id") Long id) {
+        GetStockmonDetailResponseDto stockmonDetail = stockmonService.getStockmonDetail(id);
+        return ResponseEntity.ok(SuccessResponse.<GetStockmonDetailResponseDto>builder()
+                .data(stockmonDetail)
+                .message("스톡몬 상세 조회 성공")
+                .timestamp(new Date())
+                .build()
+        );
+
     }
 
 }
