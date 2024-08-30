@@ -22,12 +22,4 @@ public class StockTower {
 
     private Double longitude;
 
-    private String imgUrl;
-
-    private String description;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
 }
