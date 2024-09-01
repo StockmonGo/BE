@@ -12,6 +12,7 @@ import com.pda.core.service.StockTowerService;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.WorldService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/maps")
+@Tag(name = "지도 관련 API 모음")
+@RequestMapping("/api/core/maps")
 public class WorldController {
 
     private final WorldService worldService;
@@ -34,7 +36,7 @@ public class WorldController {
     private final StockmonService stockmonService;
 
     @PostMapping("/stockmons")
-    @Operation(summary = "주변 스톡몬, 스톡타워 조회")
+    @Operation(summary = "주변 스톡몬, 스톡타워 조회 API")
     public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
         List<World> worlds = worldService.getNearWorlds(getWorldStockmonsRequestDto);
         List<StockTower> stockTowers = stockTowerService.getNearStockTowers(getWorldStockmonsRequestDto);
