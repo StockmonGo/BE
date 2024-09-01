@@ -1,10 +1,8 @@
 package com.pda.core.entity;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.*;
-import org.springframework.cglib.core.Local;
 
 @Getter
 @Builder

@@ -22,6 +22,8 @@ public class Stock {
 
     private String code;
 
+    private String stockMarket;
+
     @ManyToOne
     @JoinColumn(name = "stock_type_id")
     private  StockType stockType;

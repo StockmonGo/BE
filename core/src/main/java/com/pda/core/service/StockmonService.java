@@ -1,8 +1,14 @@
 package com.pda.core.service;
 
+import static com.pda.core.exception.ExceptionMessage.NO_STOCKMONDETAIL;
+
+import com.pda.core.dto.GetStockmonDetailFromDbDto;
+import com.pda.core.dto.GetStockmonDetailResponseDto;
 import com.pda.core.entity.Stockmon;
+import com.pda.core.exception.NoStockmonDetailException;
 import com.pda.core.repository.StockmonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,9 +17,16 @@ public class StockmonService {
 
     private final StockmonRepository stockmonRepository;
 
-
     public Stockmon getStockmon(long id) {
         return stockmonRepository.findById(id).orElseThrow();
+    }
+
+    public GetStockmonDetailResponseDto getStockmonDetail(Long id) {
+        GetStockmonDetailFromDbDto dbDto = stockmonRepository.findStockmonDetailById(id)
+                .orElseThrow(() -> new NoStockmonDetailException(
+                        HttpStatus.BAD_REQUEST, NO_STOCKMONDETAIL));
+
+        return GetStockmonDetailResponseDto.from(dbDto);
     }
 
 }
