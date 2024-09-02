@@ -10,6 +10,9 @@ import com.pda.core.service.AccountService;
 import com.pda.core.service.TravelerService;
 import java.time.LocalDateTime;
 import java.util.Date;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/users")
+@Tag(name = "게좌 관련 API 모음")
+@RequestMapping("/api/core/users/account")
 public class AccountController {
     private final AccountService accountService;
-    private final TravelerService travelerService;
 
-    public AccountController(AccountService accountService, TravelerService travelerService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
-        this.travelerService = travelerService;
     }
 
-    @PostMapping("/account")
+
+    @Operation(summary = "계좌 개설 API")
+    @PostMapping
     public ResponseEntity<SuccessResponse<Void>> createAccount(@RequestBody CreateAccountRequestDto request) {
         Account createdAccount = accountService.createAccount(request.getTravelerId());
 
@@ -42,7 +46,8 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/account")
+    @Operation(summary = "계좌 개설 여부 API")
+    @GetMapping
     public ResponseEntity<SuccessResponse<AccountCheckResponseDto>> checkAccount() {
         // TODO: 추후 로그인 로직 추가시 수정
         long travelerId = 1;
@@ -51,23 +56,6 @@ public class AccountController {
         SuccessResponse<AccountCheckResponseDto> response = SuccessResponse.<AccountCheckResponseDto>builder()
                 .data(checkResult)
                 .message("계좌 개설 조회 성공")
-                .timestamp(new Date())
-                .build();
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/profile")
-    public ResponseEntity<SuccessResponse<HasAccountResponseDto>> getUserProfile() {
-        // TODO: 추후 로그인 로직 추가시 수정
-        long travelerId = 7;
-
-        Traveler traveler = travelerService.getTravelerById(travelerId);
-        HasAccountResponseDto profileDto = HasAccountResponseDto.fromTraveler(traveler);
-
-        SuccessResponse<HasAccountResponseDto> response = SuccessResponse.<HasAccountResponseDto>builder()
-                .data(profileDto)
-                .message("성공")
                 .timestamp(new Date())
                 .build();
 
