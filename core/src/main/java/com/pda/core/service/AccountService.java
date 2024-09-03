@@ -1,7 +1,5 @@
 package com.pda.core.service;
 
-import static com.pda.core.exception.ExceptionMessage.HAS_ACCOUNT;
-import static com.pda.core.exception.ExceptionMessage.NO_TRAVELER;
 
 import com.pda.core.dto.AccountCheckResponseDto;
 import com.pda.core.dto.AccountDto;
@@ -12,9 +10,7 @@ import com.pda.core.exception.HasAccountException;
 import com.pda.core.exception.NoTravelerException;
 import com.pda.core.repository.AccountRepository;
 import com.pda.core.repository.TravelerRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,11 +25,10 @@ public class AccountService {
 
     public Account createAccount(Long travelerId){
         Traveler traveler = travelerRepository.findById(travelerId)
-                .orElseThrow(() -> new NoTravelerException(
-                HttpStatus.BAD_REQUEST, NO_TRAVELER));
+                .orElseThrow(NoTravelerException::new);
 
         if (traveler.getAccount() != null) {
-            throw new HasAccountException(HttpStatus.BAD_REQUEST, HAS_ACCOUNT);
+            throw new HasAccountException();
         }
 
         AccountDto accountDto = AccountDto.builder()
@@ -59,8 +54,7 @@ public class AccountService {
 
     public HasAccountResponseDto getUserProfile(Long travelerId) {
         Traveler traveler = travelerRepository.findById(travelerId)
-                .orElseThrow(() -> new NoTravelerException(
-                        HttpStatus.BAD_REQUEST, NO_TRAVELER));
+                .orElseThrow(NoTravelerException::new);
         return HasAccountResponseDto.fromTraveler(traveler);
     }
 

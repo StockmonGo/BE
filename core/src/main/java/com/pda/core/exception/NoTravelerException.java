@@ -4,8 +4,11 @@ import org.springframework.http.HttpStatus;
 
 public class NoTravelerException extends CoreException {
 
-    public NoTravelerException(HttpStatus httpStatus, String message) {
-        super(httpStatus, message);
+
+    public static final String NO_TRAVELER = "사용자 없음";
+
+    public NoTravelerException() {
+        super(HttpStatus.BAD_REQUEST, NO_TRAVELER);
     }
 
 }

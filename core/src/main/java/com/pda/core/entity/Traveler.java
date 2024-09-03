@@ -13,14 +13,14 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Traveler {
 
     @Id
@@ -41,16 +41,19 @@ public class Traveler {
     private LocalDateTime updatedAt;
 
     @OneToOne
+    @Setter
     @JoinColumn(name = "account_id")
     private Account account;
 
     @OneToMany(mappedBy = "traveler")
     @JsonIgnoreProperties("traveler")
+    @Builder.Default
     private List<TravelerAlliance> travelerAlliances = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "traveler")
     @JsonIgnoreProperties("traveler")
+    @Builder.Default
     private List<TravelerStockmon> travelerStockmons = new ArrayList<>();
 
 }

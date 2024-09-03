@@ -12,6 +12,7 @@ import com.pda.core.service.StockTowerService;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.WorldService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.pda.core.config.SwaggerConfig.JWT;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "지도 관련 API 모음")
@@ -37,6 +40,7 @@ public class WorldController {
 
     @PostMapping("/stockmons")
     @Operation(summary = "주변 스톡몬, 스톡타워 조회 API")
+    @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
         List<World> worlds = worldService.getNearWorlds(getWorldStockmonsRequestDto);
         List<StockTower> stockTowers = stockTowerService.getNearStockTowers(getWorldStockmonsRequestDto);

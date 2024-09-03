@@ -2,7 +2,7 @@ package com.pda.core.utils;
 
 import java.util.Random;
 
-public class RandomUtils {
+public class RandomUtil {
 
     private static final Random random = new Random();
 

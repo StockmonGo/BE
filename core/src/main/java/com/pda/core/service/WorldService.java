@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pda.core.dto.GetWorldStockmonsRequestDto;
 import com.pda.core.entity.World;
 import com.pda.core.repository.RedisRepository;
-import com.pda.core.utils.RandomUtils;
+import com.pda.core.utils.RandomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.pda.core.utils.WorldConstants.*;
+import static com.pda.core.utils.WorldConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -83,12 +83,12 @@ public class WorldService {
 
                 World newWorld = World.builder()
                         .id(count++)
-                        .latitude(RandomUtils.createRandomDouble(latitude, nextLatitude))
-                        .longitude(RandomUtils.createRandomDouble(longitude, nextLongitude))
+                        .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
+                        .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
                         .createdAt(new Date(currentTimeMillis))
                         .updatedAt(new Date(currentTimeMillis))
                         .isCaught(false)
-                        .stockmonId(RandomUtils.createRandomInt(1, 58))
+                        .stockmonId(RandomUtil.createRandomInt(1, 58))
                         .build();
 
                 list.add(newWorld);
@@ -115,14 +115,14 @@ public class WorldService {
                 long currentTimeMillis = System.currentTimeMillis();
                 World newWorld = World.builder()
                         .id(world.getId())
-                        .latitude(RandomUtils.createRandomDouble(Double.parseDouble(MIN_LATITUDE_STRING) + i * STOCKMON_LATITUDE_DIFF,
+                        .latitude(RandomUtil.createRandomDouble(Double.parseDouble(MIN_LATITUDE_STRING) + i * STOCKMON_LATITUDE_DIFF,
                                 Double.parseDouble(MIN_LATITUDE_STRING) + (i + 1) * STOCKMON_LATITUDE_DIFF))
-                        .longitude(RandomUtils.createRandomDouble(Double.parseDouble(MIN_LONGITUDE_STRING) + i * STOCKMON_LONGITUDE_DIFF,
+                        .longitude(RandomUtil.createRandomDouble(Double.parseDouble(MIN_LONGITUDE_STRING) + i * STOCKMON_LONGITUDE_DIFF,
                                 Double.parseDouble(MIN_LONGITUDE_STRING) + (i + 1) * STOCKMON_LONGITUDE_DIFF))
                         .createdAt(world.getCreatedAt())
                         .updatedAt(new Date(currentTimeMillis))
                         .isCaught(false)
-                        .stockmonId(RandomUtils.createRandomInt(1, 58))
+                        .stockmonId(RandomUtil.createRandomInt(1, 58))
                         .build();
                 list.set(i, newWorld);
             }
