@@ -21,12 +21,12 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .components(new Components())
-                .addServersItem(new Server().url("http://localhost"))
+                .addServersItem(new Server().url("https://api.stockmon.world"))
                 .info(apiInfo())
                 .components(new Components().addSecuritySchemes(JWT, new SecurityScheme()
                         .name(jwt)
                         .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
+                        .scheme("Bearer")
                         .bearerFormat(JWT)
                         .in(SecurityScheme.In.HEADER)
                         .name(HttpHeaders.AUTHORIZATION)));
