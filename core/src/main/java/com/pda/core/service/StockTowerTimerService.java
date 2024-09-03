@@ -1,9 +1,13 @@
 package com.pda.core.service;
 
+import com.pda.core.dto.StockTowerTimerDetailResponseDto;
 import com.pda.core.dto.StockTowerTimerResponseDto;
 import com.pda.core.dto.StockTowerTimerUpdateDto;
+import com.pda.core.entity.StockTower;
 import com.pda.core.entity.StockTowerTimer;
 import com.pda.core.exception.CoolDownException;
+import com.pda.core.exception.NoStockTowerException;
+import com.pda.core.repository.StockTowerRepository;
 import com.pda.core.repository.StockTowerTimerRepository;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
@@ -16,11 +20,13 @@ import org.springframework.stereotype.Service;
 public class StockTowerTimerService {
 
     private final StockTowerTimerRepository stockTowerTimerRepository;
+    private final StockTowerRepository stockTowerRepository;
     private static final int COOLDOWN_MINUTES = 3;
     private final Random random = new Random();
 
-    public StockTowerTimerService(StockTowerTimerRepository stockTowerTimerRepository) {
+    public StockTowerTimerService(StockTowerTimerRepository stockTowerTimerRepository, StockTowerRepository stockTowerRepository) {
         this.stockTowerTimerRepository = stockTowerTimerRepository;
+        this.stockTowerRepository = stockTowerRepository;
     }
 
     @Transactional
@@ -51,4 +57,16 @@ public class StockTowerTimerService {
 
         return new StockTowerTimerResponseDto(increasedStockBall);
     }
+
+    @Transactional
+    public StockTowerTimerDetailResponseDto getStockTowerDetail(Long stockTowerId) {
+        StockTower stockTower = stockTowerRepository.findById(stockTowerId)
+                .orElseThrow(() -> new NoStockTowerException());
+
+        StockTowerTimer stockTowerTimer = stockTowerTimerRepository
+                .findFirstByStockTowerIdOrderByUpdatedAtDesc(stockTowerId)
+                .orElse(null);
+        return StockTowerTimerDetailResponseDto.fromEntity(stockTowerTimer, stockTower);
+    }
+
 }
