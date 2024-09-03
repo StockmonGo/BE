@@ -1,6 +1,6 @@
 package com.pda.core.utils;
 
-public class WorldConstants {
+public class WorldConstant {
 
     public static final String WORLD_REDIS_KEY = "world";
     public static final String MIN_LATITUDE_STRING = "37.42928001105901";

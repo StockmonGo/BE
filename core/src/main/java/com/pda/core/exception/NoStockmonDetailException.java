@@ -4,8 +4,10 @@ import org.springframework.http.HttpStatus;
 
 public class NoStockmonDetailException extends CoreException{
 
-    public NoStockmonDetailException(HttpStatus httpStatus, String message) {
-        super(httpStatus, message);
+    public static final String NO_STOCKMONDETAIL = "스톡몬 상세 정보 없음";
+
+    public NoStockmonDetailException() {
+        super(HttpStatus.BAD_REQUEST, NO_STOCKMONDETAIL);
     }
 
 }
