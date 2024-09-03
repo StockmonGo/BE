@@ -16,7 +16,7 @@ import static com.pda.core.config.SwaggerConfig.JWT;
 import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 @RestController
-@Tag(name = "게좌 관련 API 모음")
+@Tag(name = "계좌 관련 API 모음")
 @RequestMapping("/api/core/users/account")
 public class AccountController {
     private final AccountService accountService;
