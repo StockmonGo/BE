@@ -1,6 +1,5 @@
 package com.pda.core.exception;
 
-
 import org.springframework.http.HttpStatus;
 
 public class HasAccountException extends CoreException{
