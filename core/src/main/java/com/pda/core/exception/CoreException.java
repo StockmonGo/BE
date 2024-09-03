@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 public class CoreException extends RuntimeException {
 
     private final HttpStatus httpStatus;
+
     public CoreException(HttpStatus httpStatus, String message) {
        super(message);
         this.httpStatus = httpStatus;
     }
+
 }
