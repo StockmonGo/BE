@@ -13,7 +13,7 @@ public class TravelerStockmonDto {
     private Long id;
     private String name;
     private String imgUrl;
-    private Long count;
+    private Long catchCount;
     private String stockCode;
     private Double stockAveragePrice;
 
@@ -26,7 +26,7 @@ public class TravelerStockmonDto {
                 .id(stockmon.getId())
                 .name(stock.getName())
                 .imgUrl(stockmon.getImgUrl())
-                .count(travelerStockmon.getStockmonCount())
+                .catchCount(travelerStockmon.getStockmonCount())
                 .stockCode(stock.getCode())
                 .stockAveragePrice(travelerStockmon.getStockmonAveragePrice())
                 .build();
