@@ -11,4 +11,5 @@ public class ExceptionMessage {
 
     public static final String NO_STOCKMONDETAIL = "스톡몬 상세 정보 없음";
 
+
 }
