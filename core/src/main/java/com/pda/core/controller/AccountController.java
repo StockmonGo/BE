@@ -2,24 +2,18 @@ package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.AccountCheckResponseDto;
-import com.pda.core.dto.CreateAccountRequestDto;
-import com.pda.core.dto.HasAccountResponseDto;
 import com.pda.core.entity.Account;
-import com.pda.core.entity.Traveler;
 import com.pda.core.service.AccountService;
-import com.pda.core.service.TravelerService;
-import java.time.LocalDateTime;
 import java.util.Date;
-
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.pda.core.config.SwaggerConfig.JWT;
+import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 @RestController
 @Tag(name = "게좌 관련 API 모음")
@@ -33,9 +27,10 @@ public class AccountController {
 
 
     @Operation(summary = "계좌 개설 API")
+    @SecurityRequirement(name = JWT)
     @PostMapping
-    public ResponseEntity<SuccessResponse<Void>> createAccount(@RequestBody CreateAccountRequestDto request) {
-        Account createdAccount = accountService.createAccount(request.getTravelerId());
+    public ResponseEntity<SuccessResponse<Void>> createAccount(@RequestHeader(TRAVELER_ID) Long travelerId) {
+        Account createdAccount = accountService.createAccount(travelerId);
 
         SuccessResponse<Void> response = SuccessResponse.<Void>builder()
                 .data(null)
@@ -47,10 +42,9 @@ public class AccountController {
     }
 
     @Operation(summary = "계좌 개설 여부 API")
+    @SecurityRequirement(name = JWT)
     @GetMapping
-    public ResponseEntity<SuccessResponse<AccountCheckResponseDto>> checkAccount() {
-        // TODO: 추후 로그인 로직 추가시 수정
-        long travelerId = 1;
+    public ResponseEntity<SuccessResponse<AccountCheckResponseDto>> checkAccount(@RequestHeader(TRAVELER_ID) Long travelerId) {
         AccountCheckResponseDto checkResult = accountService.hasAccount(travelerId);
 
         SuccessResponse<AccountCheckResponseDto> response = SuccessResponse.<AccountCheckResponseDto>builder()
