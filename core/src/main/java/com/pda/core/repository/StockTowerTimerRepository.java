@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockTowerTimerRepository extends JpaRepository<StockTowerTimer, Long> {
     Optional<StockTowerTimer> findFirstByTravelerIdAndStockTowerIdOrderByUpdatedAtDesc(Long travelerId, Long stockTowerId);
+    Optional<StockTowerTimer> findFirstByStockTowerIdOrderByUpdatedAtDesc(Long stockTowerId);
 }

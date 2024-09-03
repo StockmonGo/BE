@@ -1,7 +1,6 @@
 package com.pda.core.exception;
 
 import com.pda.commons.dto.FailResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +37,5 @@ public class CoreExceptionHandler {
                         .timestamp(new Date())
                         .build());
     }
-
 
 }
