@@ -1,7 +1,10 @@
 package com.pda.core.repository;
 
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,10 +20,6 @@ public class RedisRepository {
         this.listOps = redisTemplate.opsForList();
     }
 
-    public void pushToList(String key, Object value) {
-        listOps.rightPush(key, value);
-    }
-
     public void setToListAll(String key, List<?> value) {
         redisTemplate.delete(key);
         listOps.rightPushAll(key, value);
@@ -30,19 +29,4 @@ public class RedisRepository {
         return listOps.range(key, 0, -1);
     }
 
-    public void setValueAtIndex(String key, long index, Object value) {
-        listOps.set(key, index, value);
-    }
-
-    public void removeFromList(String key, long count, Object value) {
-        listOps.remove(key, count, value);
-    }
-
-    public Object getFromList(String key, long index) {
-        return listOps.index(key, index);
-    }
-
-    public Long getListSize(String key) {
-        return listOps.size(key);
-    }
 }

@@ -1,64 +1,54 @@
 package com.pda.core.service;
 
 import com.pda.core.dto.StockTowerTimerResponseDto;
+import com.pda.core.dto.StockTowerTimerUpdateDto;
 import com.pda.core.entity.StockTowerTimer;
-import com.pda.core.repository.RedisRepository;
+import com.pda.core.exception.CoolDownException;
+import com.pda.core.repository.StockTowerTimerRepository;
+import jakarta.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+import java.util.Random;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class StockTowerTimerService {
 
-    private final RedisRepository redisRepository;
+    private final StockTowerTimerRepository stockTowerTimerRepository;
+    private static final int COOLDOWN_MINUTES = 3;
+    private final Random random = new Random();
 
-    // Redis에 저장될 때 사용할 키
-    private static final String STOCK_TOWER_TIMER_KEY = "stockTowerTimer";
+    public StockTowerTimerService(StockTowerTimerRepository stockTowerTimerRepository) {
+        this.stockTowerTimerRepository = stockTowerTimerRepository;
+    }
 
-    public StockTowerTimerResponseDto saveStockTowerTimer(Long travelerId, Long stockTowerId) {
-        StockTowerTimer timer = StockTowerTimer.builder()
-                .id(generateUniqueId())
+    @Transactional
+    public StockTowerTimerResponseDto useTower(Long travelerId, Long stockTowerId) {
+        LocalDateTime now = LocalDateTime.now();
+        Optional<StockTowerTimer> latestTimer = stockTowerTimerRepository
+                .findFirstByTravelerIdAndStockTowerIdOrderByUpdatedAtDesc(travelerId, stockTowerId);
+
+        if (latestTimer.isPresent()) {
+            Duration timeSinceLastUse = Duration.between(latestTimer.get().getUpdatedAt(), now);
+            if (timeSinceLastUse.toMinutes() < COOLDOWN_MINUTES) {
+                throw new CoolDownException();
+            }
+        }
+
+        StockTowerTimerUpdateDto updateDto = StockTowerTimerUpdateDto.builder()
                 .travelerId(travelerId)
                 .stockTowerId(stockTowerId)
-                .createdAt(new Date())
-                .updatedAt(new Date())
+                .updatedAt(now)
                 .build();
 
-        redisRepository.pushToList(STOCK_TOWER_TIMER_KEY, timer);
+        StockTowerTimer updatedTimer = updateDto.toEntity(latestTimer.orElse(new StockTowerTimer()));
 
-        long increasedStockBall = 4;
+        stockTowerTimerRepository.save(updatedTimer);
+
+        // TODO: 우선 3~6까지 랜덤으로 생성
+        long increasedStockBall = random.nextInt(4) + 3;
 
         return new StockTowerTimerResponseDto(increasedStockBall);
-    }
-
-    private Long generateUniqueId() {
-        return UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-    }
-
-    /**
-     * 모든 StockTowerTimer 객체를 조회
-     * @return StockTowerTimer 객체 리스트
-     */
-    public List<StockTowerTimer> getAllStockTowerTimers() {
-        List<Object> timerObjects = redisRepository.getList(STOCK_TOWER_TIMER_KEY);
-        return timerObjects.stream()
-                .map(obj -> (StockTowerTimer) obj)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 특정 traveler의 StockTowerTimer 객체를 조회
-     * @param travelerId 여행자 ID
-     * @return 해당 traveler의 StockTowerTimer 객체 리스트
-     */
-    public List<StockTowerTimer> getStockTowerTimersByTravelerId(Long travelerId) {
-        return getAllStockTowerTimers().stream()
-                .filter(timer -> timer.getTravelerId().equals(travelerId))
-                .collect(Collectors.toList());
     }
 }

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "게좌 관련 API 모음")
+@Tag(name = "계좌 관련 API 모음")
 @RequestMapping("/api/core/users/account")
 public class AccountController {
     private final AccountService accountService;

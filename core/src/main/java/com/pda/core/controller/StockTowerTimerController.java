@@ -5,8 +5,9 @@ import com.pda.core.dto.StockTowerTimerRequestDto;
 import com.pda.core.dto.StockTowerTimerResponseDto;
 import com.pda.core.service.StockTowerTimerService;
 import io.swagger.v3.oas.annotations.Operation;
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
 import java.util.Date;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,18 +24,23 @@ public class StockTowerTimerController {
         this.stockTowerTimerService = stockTowerTimerService;
     }
     @PostMapping
-    @Operation(summary = "스톡 타워 보상 요청")
-    public ResponseEntity<SuccessResponse<StockTowerTimerResponseDto>> startStockTower(@RequestBody StockTowerTimerRequestDto request) {
-        // TODO: 추후 로그인 로직 추가시 수정
+    public ResponseEntity<SuccessResponse<StockTowerTimerResponseDto>> useTower(@Valid @RequestBody StockTowerTimerRequestDto request) {
+
         long travelerId = 1;
-        StockTowerTimerResponseDto responseDto = stockTowerTimerService.saveStockTowerTimer(travelerId, request.getStockTowerId());
-
-        return ResponseEntity.ok(SuccessResponse.<StockTowerTimerResponseDto>builder()
-                .data(responseDto)
-                .message("성공")
-                .timestamp(new Date())
-                .build()
-        );
+        try {
+            StockTowerTimerResponseDto response = stockTowerTimerService.useTower( travelerId, request.getStockTowerId());
+            return ResponseEntity.ok(SuccessResponse
+                    .<StockTowerTimerResponseDto>builder()
+                    .data(response)
+                    .message("성공")
+                    .timestamp(new Date())
+                    .build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(SuccessResponse
+                    .<StockTowerTimerResponseDto>builder()
+                    .message(e.getMessage())
+                    .timestamp(new Date())
+                    .build());
+        }
     }
-
 }
