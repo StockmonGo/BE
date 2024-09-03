@@ -6,13 +6,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-
-import static com.pda.core.exception.ExceptionMessage.OUT_OF_WORLD_RANGE;
-import static com.pda.core.utils.WorldConstants.*;
+import static com.pda.core.utils.WorldConstant.*;
 
 @Getter
 @RequiredArgsConstructor
 public class GetWorldStockmonsRequestDto {
+    public static final String  OUT_OF_WORLD_RANGE = "사용자 좌표 오류";
 
     @DecimalMin(value = MIN_LATITUDE_STRING, message = OUT_OF_WORLD_RANGE)
     @DecimalMax(value = MAX_LATITUDE_STRING, message = OUT_OF_WORLD_RANGE)
