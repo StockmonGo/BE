@@ -3,19 +3,19 @@ package com.pda.core.controller;
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.GetStockmonDetailResponseDto;
 import com.pda.core.dto.GetStockmonListResponseDto;
-import com.pda.core.dto.GetWorldStockmonsResponseDto;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.TravelerStockmonService;
 import io.swagger.v3.oas.annotations.Operation;
-import java.time.LocalDateTime;
+
 import java.util.Date;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import static com.pda.core.config.SwaggerConfig.JWT;
+import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 @RestController
 @Tag(name = "모험가_스톡몬 관련 API 모음")
@@ -32,9 +32,8 @@ public class TravelerStockmonController {
 
     @GetMapping("/stockmons")
     @Operation(summary = "모험가_스톡몬 목록 조회 API")
-    public ResponseEntity<SuccessResponse<GetStockmonListResponseDto>> getStockmons() {
-        // TODO: 추후 로그인 로직 추가시 수정
-        long travelerId = 1;
+    @SecurityRequirement(name = JWT)
+    public ResponseEntity<SuccessResponse<GetStockmonListResponseDto>> getStockmons(@RequestHeader(TRAVELER_ID) Long travelerId) {
         GetStockmonListResponseDto stockmons = travelerStockmonService.getStockmonsByTravelerId(travelerId);
         return ResponseEntity.ok(SuccessResponse.<GetStockmonListResponseDto>builder()
                 .data(stockmons)
@@ -46,6 +45,7 @@ public class TravelerStockmonController {
 
     @GetMapping("/stockmons/{id}")
     @Operation(summary = "스톡몬 상세 정보 조회")
+    @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<GetStockmonDetailResponseDto>> getStockmonDetail(@PathVariable("id") Long id) {
         GetStockmonDetailResponseDto stockmonDetail = stockmonService.getStockmonDetail(id);
         return ResponseEntity.ok(SuccessResponse.<GetStockmonDetailResponseDto>builder()
@@ -54,7 +54,5 @@ public class TravelerStockmonController {
                 .timestamp(new Date())
                 .build()
         );
-
     }
-
 }
