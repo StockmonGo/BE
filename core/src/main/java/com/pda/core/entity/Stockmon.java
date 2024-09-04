@@ -45,4 +45,12 @@ public class Stockmon {
     @JsonIgnoreProperties("stockmon")
     private List<TravelerStockmon> travelerStockmons = new ArrayList<>();
 
+    @OneToMany(mappedBy = "senderStockmon")
+    @JsonIgnoreProperties("senderStockmon")
+    private List<ExchangeNotice> exchangeNotices = new ArrayList<>();
+
+    public Stockmon(Long id) {
+        this.id = id;
+    }
+
 }
