@@ -17,14 +17,13 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
-        String jwt = "JWT";
 
         return new OpenAPI()
                 .components(new Components())
                 .addServersItem(new Server().url("https://api.stockmon.world"))
                 .info(apiInfo())
                 .components(new Components().addSecuritySchemes(JWT, new SecurityScheme()
-                        .name(jwt)
+                        .name(JWT)
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("Bearer")
                         .bearerFormat(JWT)
