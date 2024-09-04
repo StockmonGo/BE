@@ -23,9 +23,9 @@ public interface StockmonRepository extends JpaRepository<Stockmon, Long> {
             "    COALESCE(ts.stockmonCount, 0L), " +
             "    s.stock.stockMarket " +
             ")" +
-            "FROM Stockmon s " +
-            "LEFT JOIN s.travelerStockmons ts " +
-            "WHERE s.id = :id")
+            "FROM TravelerStockmon ts LEFT JOIN Stockmon s " +
+            "ON s.id = ts.stockmon.id " +
+            "WHERE ts.traveler.id = :travelerId and ts.stockmon.id = :id")
 
-    Optional<GetStockmonDetailFromDbDto> findStockmonDetailById(@Param("id") Long id);
+    Optional<GetStockmonDetailFromDbDto> findStockmonDetailById(@Param("id") Long id, @Param("travelerId") Long travelerId);
 }

@@ -46,8 +46,8 @@ public class TravelerStockmonController {
     @GetMapping("/stockmons/{id}")
     @Operation(summary = "스톡몬 상세 정보 조회")
     @SecurityRequirement(name = JWT)
-    public ResponseEntity<SuccessResponse<GetStockmonDetailResponseDto>> getStockmonDetail(@PathVariable("id") Long id) {
-        GetStockmonDetailResponseDto stockmonDetail = stockmonService.getStockmonDetail(id);
+    public ResponseEntity<SuccessResponse<GetStockmonDetailResponseDto>> getStockmonDetail(@PathVariable("id") Long id, @RequestHeader(TRAVELER_ID) Long travelerId) {
+        GetStockmonDetailResponseDto stockmonDetail = stockmonService.getStockmonDetail(id, travelerId);
         return ResponseEntity.ok(SuccessResponse.<GetStockmonDetailResponseDto>builder()
                 .data(stockmonDetail)
                 .message("스톡몬 상세 조회 성공")

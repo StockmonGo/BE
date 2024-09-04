@@ -19,8 +19,8 @@ public class StockmonService {
         return stockmonRepository.findById(id).orElseThrow();
     }
 
-    public GetStockmonDetailResponseDto getStockmonDetail(Long id) {
-        GetStockmonDetailFromDbDto dbDto = stockmonRepository.findStockmonDetailById(id)
+    public GetStockmonDetailResponseDto getStockmonDetail(Long id, Long travelerId) {
+        GetStockmonDetailFromDbDto dbDto = stockmonRepository.findStockmonDetailById(id, travelerId)
                 .orElseThrow(NoStockmonDetailException::new);
 
         return GetStockmonDetailResponseDto.from(dbDto);
