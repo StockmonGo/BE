@@ -55,16 +55,6 @@ public class Traveler {
     @Builder.Default
     private List<TravelerStockmon> travelerStockmons = new ArrayList<>();
 
-    @OneToMany(mappedBy = "traveler")
-    @JsonIgnoreProperties("traveler")
-    @Builder.Default
-    private List<ExchangeNotice> exchangeNotices = new ArrayList<>();
-
-    @OneToMany(mappedBy = "traveler")
-    @JsonIgnoreProperties("traveler")
-    @Builder.Default
-    private List<AllianceNotice> allianceNotices = new ArrayList<>();
-
     public Traveler(Long id) {
         this.id = id;
     }
