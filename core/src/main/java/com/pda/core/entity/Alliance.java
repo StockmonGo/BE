@@ -18,10 +18,6 @@ public class Alliance {
     @Id
     private Long id;
 
-    private  LocalDateTime  createdAt;
-
-    private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "alliance")
     @JsonIgnoreProperties("alliance")
     private List<TravelerAlliance> travelerAlliances = new ArrayList<>();
