@@ -12,5 +12,6 @@ public interface StockFeignClient {
     ResponseEntity<String> getTest();
 
     @GetMapping("/api/stock/total-price/{code}")
-    ResponseEntity<Long> getTotalPrice(@PathVariable String code);
+    ResponseEntity<Long> getTotalPrice(@PathVariable("code") String code);
+
 }
