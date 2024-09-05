@@ -16,4 +16,7 @@ public interface TravelerRepository extends JpaRepository<Traveler, Long> {
     @Modifying
     @Query("UPDATE Traveler t SET t.stockballCount = t.stockballCount + :ball WHERE t.nickname = :nickname")
     void addStockball(@Param("nickname") String nickname, @Param("ball") Long ball);
+
+    @Query("SELECT t.stockballCount FROM Traveler t WHERE t.id = :travelerId")
+    Optional<Long> findStockballCountById(@Param("travelerId") Long travelerId);
 }

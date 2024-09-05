@@ -2,6 +2,7 @@ package com.pda.core.service;
 
 
 import com.pda.core.dto.GetTravelerNicknameResponseDto;
+import com.pda.core.dto.GetTravelerStockballsResponseDto;
 import com.pda.core.dto.JoinRequestDto;
 import com.pda.core.dto.JoinResponseDto;
 import com.pda.core.entity.Traveler;
@@ -54,6 +55,15 @@ public class TravelerService {
     @Transactional
     public void remove(Long travelerId) {
         travelerRepository.deleteById(travelerId);
+    }
+
+    @Transactional
+    public GetTravelerStockballsResponseDto getTravelerStockballsById(Long travelerId) {
+        Long stockballCount = travelerRepository.findStockballCountById(travelerId)
+                .orElseThrow((NoTravelerException::new));
+
+        return new GetTravelerStockballsResponseDto(stockballCount);
+
     }
 
 }
