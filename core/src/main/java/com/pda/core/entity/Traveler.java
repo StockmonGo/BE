@@ -34,6 +34,7 @@ public class Traveler {
 
     private String role;
 
+    @Setter
     private Long stockballCount;
 
     private LocalDateTime createdAt;
