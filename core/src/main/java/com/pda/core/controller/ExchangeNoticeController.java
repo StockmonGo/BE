@@ -4,6 +4,8 @@ import static com.pda.core.config.SwaggerConfig.JWT;
 import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 import com.pda.commons.dto.SuccessResponse;
+import com.pda.core.dto.AcceptStockmonExchangeRequestDto;
+import com.pda.core.dto.AcceptStockmonExchangeResponseDto;
 import com.pda.core.dto.GetStockmonExchangeListResponseDto;
 import com.pda.core.dto.StockmonExchangeNoticeRequestDto;
 import com.pda.core.service.ExchangeNoticeService;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "스톡몬 교환 관련 API 모음")
-@RequestMapping("/api/core/stockmons/exchange/request")
+@RequestMapping("/api/core/stockmons/exchange")
 public class ExchangeNoticeController {
 
     private final ExchangeNoticeService exchangeNoticeService;
@@ -30,7 +32,7 @@ public class ExchangeNoticeController {
         this.exchangeNoticeService = exchangeNoticeService;
     }
 
-    @PostMapping
+    @PostMapping("/request")
     @Operation(summary = "스톡몬 교환 요청 API")
     @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<Void>> createExchangeNotice(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody StockmonExchangeNoticeRequestDto requestDto) {
@@ -46,7 +48,7 @@ public class ExchangeNoticeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    @GetMapping("/request")
     @Operation(summary = "스톡몬 교환 알림 목록 조회 API")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<SuccessResponse<GetStockmonExchangeListResponseDto>> getExchangeNotices(@RequestHeader(TRAVELER_ID) Long travelerId) {
@@ -56,6 +58,24 @@ public class ExchangeNoticeController {
         SuccessResponse<GetStockmonExchangeListResponseDto> response = SuccessResponse.<GetStockmonExchangeListResponseDto>builder()
                 .data(exchangeListDto)
                 .message("성공")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/accept")
+    @Operation(summary = "스톡몬 교환 수락 API")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<SuccessResponse<AcceptStockmonExchangeResponseDto>> acceptExchange(
+            @RequestBody AcceptStockmonExchangeRequestDto requestDto,
+            @RequestHeader(TRAVELER_ID) Long travelerId) {
+
+        AcceptStockmonExchangeResponseDto responseDto = exchangeNoticeService.acceptExchange(requestDto, travelerId);
+
+        SuccessResponse<AcceptStockmonExchangeResponseDto> response = SuccessResponse.<AcceptStockmonExchangeResponseDto>builder()
+                .data(responseDto)
+                .message("교환 수락 성공")
                 .timestamp(new Date())
                 .build();
 
