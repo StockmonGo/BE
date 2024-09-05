@@ -1,11 +1,10 @@
 package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
-import com.pda.core.dto.alliances.GetTravelerAlliancesListResponseDto;
+import com.pda.core.dto.alliance.GetTravelerAllianceListResponseDto;
 import com.pda.core.service.AllianceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +23,11 @@ public class AllianceController {
 
     @Operation(summary = "동맹 목록 조회 API")
     @GetMapping("")
-    public ResponseEntity<SuccessResponse<List<GetTravelerAlliancesListResponseDto>>> getTravelerAlliancesList(@RequestHeader(TRAVELER_ID) Long travelerId){
-        List<GetTravelerAlliancesListResponseDto> getTravelerAlliancesListResponseDto = allianceService.getAlliances(travelerId);
+    public ResponseEntity<SuccessResponse<List<GetTravelerAllianceListResponseDto>>> getTravelerAlliancesList(@RequestHeader(TRAVELER_ID) Long travelerId){
+        List<GetTravelerAllianceListResponseDto> getTravelerAllianceListResponseDto = allianceService.getAlliances(travelerId);
 
-        return ResponseEntity.ok(SuccessResponse.<List<GetTravelerAlliancesListResponseDto>>builder()
-                .data(getTravelerAlliancesListResponseDto)
+        return ResponseEntity.ok(SuccessResponse.<List<GetTravelerAllianceListResponseDto>>builder()
+                .data(getTravelerAllianceListResponseDto)
                 .message("성공")
                 .timestamp(new Date())
                 .build()

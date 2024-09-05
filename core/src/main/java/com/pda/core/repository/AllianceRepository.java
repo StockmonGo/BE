@@ -1,6 +1,6 @@
 package com.pda.core.repository;
 
-import com.pda.core.dto.alliances.GetTravelerAlliancesListResponseDto;
+import com.pda.core.dto.alliance.GetTravelerAllianceListResponseDto;
 import com.pda.core.entity.TravelerAlliance;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,10 +19,10 @@ public interface AllianceRepository extends JpaRepository<TravelerAlliance, Long
             "WHERE t1.traveler_id = :id", nativeQuery = true)
     List<Object[]> findTravelerAllianceDataByTravelerId(Long id);
 
-    default Optional<List<GetTravelerAlliancesListResponseDto>> findNicknamesByAllianceId(Long id) {
+    default Optional<List<GetTravelerAllianceListResponseDto>> findNicknamesByAllianceId(Long id) {
         List<Object[]> results = findTravelerAllianceDataByTravelerId(id);
-        List<GetTravelerAlliancesListResponseDto> dtos = results.stream()
-                .map(result -> new GetTravelerAlliancesListResponseDto(
+        List<GetTravelerAllianceListResponseDto> dtos = results.stream()
+                .map(result -> new GetTravelerAllianceListResponseDto(
                         ((Number) result[0]).longValue(), // travelerId
                         (String) result[1] // nickname
                 ))
