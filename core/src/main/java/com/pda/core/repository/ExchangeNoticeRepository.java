@@ -3,6 +3,7 @@ package com.pda.core.repository;
 import com.pda.core.dto.GetStockmonExchangeListResponseDto;
 import com.pda.core.entity.ExchangeNotice;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,7 @@ public interface ExchangeNoticeRepository extends JpaRepository<ExchangeNotice, 
     @Query("SELECT new com.pda.core.dto.GetStockmonExchangeListResponseDto$StockmonExchange(e.id, e.sender.id, e.senderStockmon.id) " +
             "FROM ExchangeNotice e WHERE e.receiver.id = :receiverId")
     List<GetStockmonExchangeListResponseDto.StockmonExchange> findExchangeNoticesByReceiverId(@Param("receiverId") Long receiverId);
+
+    @Query("SELECT e FROM ExchangeNotice e WHERE e.id = :noticeId AND e.receiver.id = :receiverId")
+    Optional<ExchangeNotice> findByIdAndReceiverId(@Param("noticeId") Long noticeId, @Param("receiverId") Long receiverId);
 }
