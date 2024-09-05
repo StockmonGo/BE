@@ -19,7 +19,7 @@ public class TravelerStockmon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private Long stockmonCount;
 
     private Double stockmonAveragePrice;
