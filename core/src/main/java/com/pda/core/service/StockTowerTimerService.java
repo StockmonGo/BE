@@ -5,10 +5,13 @@ import com.pda.core.dto.StockTowerTimerResponseDto;
 import com.pda.core.dto.StockTowerTimerUpdateDto;
 import com.pda.core.entity.StockTower;
 import com.pda.core.entity.StockTowerTimer;
+import com.pda.core.entity.Traveler;
 import com.pda.core.exception.CoolDownException;
 import com.pda.core.exception.NoStockTowerException;
+import com.pda.core.exception.NoTravelerException;
 import com.pda.core.repository.StockTowerRepository;
 import com.pda.core.repository.StockTowerTimerRepository;
+import com.pda.core.repository.TravelerRepository;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,12 +24,14 @@ public class StockTowerTimerService {
 
     private final StockTowerTimerRepository stockTowerTimerRepository;
     private final StockTowerRepository stockTowerRepository;
+    private final TravelerRepository travelerRepository;
     private static final int COOLDOWN_MINUTES = 3;
     private final Random random = new Random();
 
-    public StockTowerTimerService(StockTowerTimerRepository stockTowerTimerRepository, StockTowerRepository stockTowerRepository) {
+    public StockTowerTimerService(StockTowerTimerRepository stockTowerTimerRepository, StockTowerRepository stockTowerRepository, TravelerRepository travelerRepository) {
         this.stockTowerTimerRepository = stockTowerTimerRepository;
         this.stockTowerRepository = stockTowerRepository;
+        this.travelerRepository = travelerRepository;
     }
 
     @Transactional
@@ -55,7 +60,19 @@ public class StockTowerTimerService {
         // TODO: 우선 3~6까지 랜덤으로 생성
         long increasedStockBall = random.nextInt(4) + 3;
 
-        return new StockTowerTimerResponseDto(increasedStockBall);
+        Traveler traveler = travelerRepository.findById(travelerId)
+                .orElseThrow((NoTravelerException::new));
+
+        long currentStockBallCount = traveler.getStockballCount();
+        long newStockBallCount = Math.min(currentStockBallCount + increasedStockBall, 50);  // 최대값을 50으로 제한
+
+
+        long actualIncrease = newStockBallCount - currentStockBallCount;
+
+        traveler.setStockballCount(newStockBallCount);
+        travelerRepository.save(traveler);
+
+        return new StockTowerTimerResponseDto(actualIncrease);
     }
 
     @Transactional
