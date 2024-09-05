@@ -1,14 +1,13 @@
 package com.pda.core.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.pda.core.entity.World;
+import com.pda.core.client.StockFeignClient;
 import com.pda.core.repository.RedisRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -20,7 +19,12 @@ import java.util.List;
 public class SwaggerTestController {
 
     private final RedisRepository redisRepository;
+    private final StockFeignClient stockFeignClient;
 
+    @GetMapping("/feign")
+    public ResponseEntity<String> feignTest() {
+        return stockFeignClient.getTest();
+    }
 
     @GetMapping
     @Operation(summary = "테스트 API")

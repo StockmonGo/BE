@@ -38,6 +38,7 @@ public class AllianceService {
     public List<GetTravelerAlliancesListResponseDto> getAlliances(Long allianceId){
         List<GetTravelerAlliancesListResponseDto> travelerAllianceList = travelerAllianceRepository.findNicknamesByAllianceId(2L).orElseThrow();
 
+
         return travelerAllianceList;
 
     }
