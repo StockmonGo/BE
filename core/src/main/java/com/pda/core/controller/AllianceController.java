@@ -3,16 +3,18 @@ package com.pda.core.controller;
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.alliances.GetTravelerAlliancesListResponseDto;
 import com.pda.core.service.AllianceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.pda.core.config.SwaggerConfig.JWT;
+import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,10 +22,10 @@ import java.util.List;
 public class AllianceController {
     private final AllianceService allianceService;
 
+    @Operation(summary = "동맹 목록 조회 API")
     @GetMapping("")
-    public ResponseEntity<SuccessResponse<List<GetTravelerAlliancesListResponseDto>>> getTravelerAlliancesList(@Valid Long id){
-        List<GetTravelerAlliancesListResponseDto> getTravelerAlliancesListResponseDto = allianceService.getAlliances(1L);
-//        List<String> getTravelerAlliancesListResponseDto = allianceService.getAlliances(1L);
+    public ResponseEntity<SuccessResponse<List<GetTravelerAlliancesListResponseDto>>> getTravelerAlliancesList(@RequestHeader(TRAVELER_ID) Long travelerId){
+        List<GetTravelerAlliancesListResponseDto> getTravelerAlliancesListResponseDto = allianceService.getAlliances(travelerId);
 
         return ResponseEntity.ok(SuccessResponse.<List<GetTravelerAlliancesListResponseDto>>builder()
                 .data(getTravelerAlliancesListResponseDto)
@@ -33,8 +35,11 @@ public class AllianceController {
         );
     }
 
+    @Operation(summary = "동맹 추가 요청 APi")
     @PostMapping("/request")
-    public ResponseEntity<SuccessResponse<String>> postAllianceRequest(){
+    @SecurityRequirement(name = JWT)
+    public ResponseEntity<SuccessResponse<String>> postAllianceRequest(@RequestHeader(TRAVELER_ID) Long travelerId){
+        System.out.println(travelerId);
         return ResponseEntity.ok(SuccessResponse.<String>builder()
                 .message("성공")
                 .data("동맹 요청 성공")
@@ -62,5 +67,3 @@ public class AllianceController {
                 .build());
     }
 }
-
-
