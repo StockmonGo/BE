@@ -1,6 +1,7 @@
 package com.pda.core.controller;
 
 import static com.pda.core.config.SwaggerConfig.JWT;
+import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.StockTowerTimerDetailResponseDto;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,10 +36,8 @@ public class StockTowerTimerController {
     @PostMapping
     @Operation(summary = "스톡타워 보상 요청 API")
     @SecurityRequirement(name = JWT)
-    public ResponseEntity<SuccessResponse<StockTowerTimerResponseDto>> useTower(
+    public ResponseEntity<SuccessResponse<StockTowerTimerResponseDto>> useTower( @RequestHeader(TRAVELER_ID) Long travelerId,
             @Valid @RequestBody StockTowerTimerRequestDto request) {
-
-        long travelerId = 1;
         try {
             StockTowerTimerResponseDto response = stockTowerTimerService.useTower(travelerId,
                     request.getStockTowerId());
