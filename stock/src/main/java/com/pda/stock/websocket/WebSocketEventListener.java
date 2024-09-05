@@ -29,17 +29,14 @@ public class WebSocketEventListener {
     private int num=0;
     private final SimpMessagingTemplate messagingTemplate;
     private final Map<String, String> sessionIdToUserMap = new ConcurrentHashMap<>();
-
     private final Map<String,String> socketData = new ConcurrentHashMap<>();
     // 종목코드, 주가
-
     private WebSocketSession webSession;
     // 웹 소켓 세션
-
     @Value(value = "${stock.app.key}")
     private String appKey;
 
-    @Value(value = "${stock.app.sercret}")
+    @Value(value = "${stock.app.secret}")
     private String appSecret;
     // 종목코드, 유저세션
 
@@ -73,7 +70,7 @@ public class WebSocketEventListener {
         ObjectMapper objectMapper = new ObjectMapper();
 
 
-        WebSocketMessage dumyMessage = new WebSocketMessage();
+        WebSocketMessage dummyMessage = new WebSocketMessage();
 
         Header header = new Header();
         header.appkey = appKey;
@@ -91,8 +88,8 @@ public class WebSocketEventListener {
         );
         body.input=input;
 
-        dumyMessage.header = header;
-        dumyMessage.body = body;
+        dummyMessage.header = header;
+        dummyMessage.body = body;
 
     }
 
@@ -180,8 +177,6 @@ public class WebSocketEventListener {
                     System.out.println("socketData: "+socketData.get("024110"));
                     num--;
                 }
-
-
 
                 messagingTemplate.convertAndSend(stockCode, new StockPriceDto(session));
             }
