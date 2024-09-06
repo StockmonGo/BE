@@ -46,9 +46,7 @@ public class TravelerController {
     @GetMapping("/profile")
     @Operation(summary = "회원 정보 조회 API")
     @SecurityRequirement(name = JWT)
-    public ResponseEntity<SuccessResponse<HasAccountResponseDto>> getUserProfile() {
-        // TODO: 추후 로그인 로직 추가시 수정
-        long travelerId = 7;
+    public ResponseEntity<SuccessResponse<HasAccountResponseDto>> getUserProfile(@RequestHeader(TRAVELER_ID) Long travelerId) {
 
         Traveler traveler = travelerService.getTravelerById(travelerId);
         HasAccountResponseDto profileDto = HasAccountResponseDto.fromTraveler(traveler);
