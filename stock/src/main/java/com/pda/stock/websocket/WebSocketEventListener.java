@@ -20,25 +20,26 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 @Component
 public class WebSocketEventListener {
-    private int num=0;
     private final SimpMessagingTemplate messagingTemplate;
-    private final Map<String, String> sessionIdToUserMap = new ConcurrentHashMap<>();
-    private final Map<String,String> socketData = new ConcurrentHashMap<>();
-    // 종목코드, 주가
+
+
+    private ArrayList<String> sessionIds = new ArrayList<String>();
+
     private WebSocketSession webSession;
     // 웹 소켓 세션
-    @Value(value = "${stock.app.key}")
-    private String appKey;
 
-    @Value(value = "${stock.app.secret}")
-    private String appSecret;
-    // 종목코드, 유저세션
+    private final Map<String,String> socketData = new ConcurrentHashMap<>();
+    // 종목코드, 주가
+
+
+
 
 
     @Autowired
@@ -48,19 +49,22 @@ public class WebSocketEventListener {
 
     public void connectSocket(String stockCode) throws ExecutionException, InterruptedException, IOException {
         StandardWebSocketClient client = new StandardWebSocketClient();
+        if(webSession!=null){
+            return;
+        }
         webSession = client.execute(new TextWebSocketHandler() {
             @Override
             protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-                if(message.getPayload().contains("{")){
 
+                if(message.getPayload().contains("{")){
+                    System.out.println("close stock market");
                 }else{
                     String[] stockInfos=message.getPayload().split("\\|")[3].split("\\^");
-                    System.out.println("value: "+stockInfos[0]);
-                    socketData.put(stockInfos[0],stockInfos[1]);
 
+                    socketData.put(stockInfos[0],stockInfos[2]);
+                    messagingTemplate.convertAndSend("/"+stockInfos[0]+"/greetings", new StockPriceDto(socketData.get(stockInfos[0])));
+                    System.out.println(stockInfos[0]+": "+stockInfos[2]);
                 }
-
-                System.out.println("Received message: " + message.getPayload().contains("{"));
 
             }
         }, "ws://ops.koreainvestment.com:21000").get();
@@ -70,11 +74,11 @@ public class WebSocketEventListener {
         ObjectMapper objectMapper = new ObjectMapper();
 
 
-        WebSocketMessage dummyMessage = new WebSocketMessage();
+        WebSocketMessage dumyMessage = new WebSocketMessage();
 
         Header header = new Header();
-        header.appkey = appKey;
-        header.appsecret=appSecret;
+        header.appkey = "PSLYhipOcQOL96OZnW6tkVSh0MG9uTEoOlZz";
+        header.appsecret="srH+UJc03CM+bqGUlDqDMyQxXuO   beovPyrlwiMGxVcQttFBkM4mpwIW1L2omkIXa19KzK8qg7+Lbhix6G5Q3njIXYH1REHy8wHfaQ1OW33I8dFfok4xuu1GorhU1FlYUeAW3MgKCXnPtBWIFrT7kKAX8HEfkYWAxt6X4SNcnDXOyMelFr4E=";
         header.custtype = "P";
         header.tr_type = "1";
         header.content_type = "utf-8";
@@ -88,9 +92,13 @@ public class WebSocketEventListener {
         );
         body.input=input;
 
-        dummyMessage.header = header;
-        dummyMessage.body = body;
+        dumyMessage.header = header;
+        dumyMessage.body = body;
 
+        // JSON 객체를 문자열로 변환합니다.
+        String jsonMessage = objectMapper.writeValueAsString(dumyMessage);
+
+        webSession.sendMessage(new TextMessage(jsonMessage));
     }
 
     public void connectStock(String stockCode) throws IOException {
@@ -99,8 +107,8 @@ public class WebSocketEventListener {
         WebSocketMessage dumyMessage = new WebSocketMessage();
 
         Header header = new Header();
-        header.appkey = appKey;
-        header.appsecret = appSecret;
+        header.appkey = "PSLYhipOcQOL96OZnW6tkVSh0MG9uTEoOlZz";
+        header.appsecret="srH+UJc03CM+bqGUlDqDMyQxXuObeovPyrlwiMGxVcQttFBkM4mpwIW1L2omkIXa19KzK8qg7+Lbhix6G5Q3njIXYH1REHy8wHfaQ1OW33I8dFfok4xuu1GorhU1FlYUeAW3MgKCXnPtBWIFrT7kKAX8HEfkYWAxt6X4SNcnDXOyMelFr4E=";
         header.custtype = "P";
         header.tr_type = "1";
         header.content_type = "utf-8";
@@ -120,6 +128,7 @@ public class WebSocketEventListener {
         // JSON 객체를 문자열로 변환합니다.
         String jsonMessage = objectMapper.writeValueAsString(dumyMessage);
         webSession.sendMessage(new TextMessage(jsonMessage));
+
     }
 
     @EventListener
@@ -127,26 +136,13 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         String sessionId = headerAccessor.getSessionId();
+
         String userName = sessionId; // 예시로 세션 ID를 사용자 이름으로 사용
+        sessionIds.add(sessionId);
+        System.out.println(sessionId+" connect");
 
 
-        System.out.println(headerAccessor.getSessionId());
-        if(num==0){
-            sessionIdToUserMap.put( "/topic/greetings",sessionId);
-            connectSocket("024110");
-            connectStock("024110");
-            num++;
-            System.out.println("num=0");
 
-        }else{
-            sessionIdToUserMap.put("/content/chart",sessionId);
-            connectStock("105560");
-            System.out.println("num=1");
-        }
-        System.out.println("handleWebSocketConnectListener"+sessionId);
-
-
-        System.out.println("New WebSocket connection established. Session ID: " + sessionId);
 
     }
 
@@ -154,34 +150,16 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) throws IOException {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        System.out.println("handleWebSocketDisconnectListener"+sessionId);
+        System.out.println("handleWebSocketDisconnectListener "+sessionId+" Success");
 
-        sessionIdToUserMap.remove(sessionId);
-        socketData.remove(sessionId);
-        num--;
-    }
+        sessionIds.remove(sessionId);
+        System.out.println(sessionId+" disconnect");
 
-    @Scheduled(fixedRate = 500)
-    public void send(){
-        int num=0;
-        synchronized(sessionIdToUserMap){
-            for (String stockCode : sessionIdToUserMap.keySet()) {
-                String session = sessionIdToUserMap.get(stockCode);
-
-
-                System.out.println("send: "+stockCode);
-                if(num==0){
-                    System.out.println("socketData: "+socketData.get("105560"));
-                    num++;
-                }else{
-                    System.out.println("socketData: "+socketData.get("024110"));
-                    num--;
-                }
-
-                messagingTemplate.convertAndSend(stockCode, new StockPriceDto(session));
-            }
+        if(sessionIds.isEmpty()){
+            socketData.clear();
+            webSession.close();
         }
     }
 
-
 }
+
