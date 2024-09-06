@@ -105,4 +105,9 @@ public class ExchangeNoticeService {
         }
     }
 
+    @Transactional
+    public void deleteExchangeNotice(Long noticeId) {
+        exchangeNoticeRepository.deleteById(noticeId);
+    }
+
 }
