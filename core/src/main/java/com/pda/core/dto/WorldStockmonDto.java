@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorldStockmonDto {
     private final long id;
-    private final long stockmon_id;
+    private final long stockmonId;
     private final double latitude;
     private final double longitude;
 }

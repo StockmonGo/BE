@@ -9,5 +9,4 @@ public class NoStockmonException extends CoreException {
     public NoStockmonException(){
         super(HttpStatus.BAD_REQUEST, NO_STOCKMON);
     }
-
 }

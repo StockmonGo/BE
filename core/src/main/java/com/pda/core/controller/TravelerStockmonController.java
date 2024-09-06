@@ -1,9 +1,7 @@
 package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
-import com.pda.core.dto.GetStockmonDetailResponseDto;
-import com.pda.core.dto.GetStockmonListResponseDto;
-import com.pda.core.dto.GetTravelerStockballsResponseDto;
+import com.pda.core.dto.*;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.TravelerService;
 import com.pda.core.service.TravelerStockmonService;
@@ -76,6 +74,20 @@ public class TravelerStockmonController {
                 .build()
         );
 
+    }
+
+    @PostMapping("/stockmons")
+    public ResponseEntity<SuccessResponse<CatchStockmonResponseDto>> catchStockmon(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody CatchStockmonRequestDto catchStockmonRequestDto) {
+
+
+        CatchStockmonResponseDto catchStockmonResponseDto = travelerStockmonService.updateCatchStockmon(travelerId, catchStockmonRequestDto);
+
+        return ResponseEntity.ok()
+                .body(SuccessResponse.<CatchStockmonResponseDto>builder()
+                        .data(catchStockmonResponseDto)
+                        .message("포획 성공")
+                        .timestamp(new Date())
+                        .build());
     }
 
 }

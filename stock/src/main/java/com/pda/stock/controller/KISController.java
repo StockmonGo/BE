@@ -21,4 +21,9 @@ public class KISController {
         return ResponseEntity.ok().body(kisService.getStockTotalPrice(code));
     }
 
+    @GetMapping("/current-price/{code}")
+    public ResponseEntity<Long> getStockCurrentPrice(@PathVariable("code") String code){
+        return ResponseEntity.ok().body(kisService.getStockCurrentPrice(code));
+    }
+
 }

@@ -55,15 +55,16 @@ public class WorldService {
 
         for (int i = 0; i < dIndex.length; i++) {
             int idx = index + dIndex[i];
-            if (validIndex(idx, list.size())) newList.add(list.get(idx));
+            if (validIndex(idx, list)) newList.add(list.get(idx));
         }
 
         return newList;
     }
 
-    private boolean validIndex(int index, int max) {
-        if(index > max || index < 0) return false;
-        return true;
+    private boolean validIndex(int index, List<World> list) {
+        if(index > list.size() || index < 0) return false;
+
+        return !list.get(index).getIsCaught();
     }
 
 
