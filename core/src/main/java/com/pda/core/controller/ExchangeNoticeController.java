@@ -7,6 +7,7 @@ import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.AcceptStockmonExchangeRequestDto;
 import com.pda.core.dto.AcceptStockmonExchangeResponseDto;
 import com.pda.core.dto.GetStockmonExchangeListResponseDto;
+import com.pda.core.dto.RejectStockmonExchangeRequestDto;
 import com.pda.core.dto.StockmonExchangeNoticeRequestDto;
 import com.pda.core.service.ExchangeNoticeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,6 +77,22 @@ public class ExchangeNoticeController {
         SuccessResponse<AcceptStockmonExchangeResponseDto> response = SuccessResponse.<AcceptStockmonExchangeResponseDto>builder()
                 .data(responseDto)
                 .message("교환 수락 성공")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/reject")
+    @Operation(summary = "스톡몬 교환 거절 API")
+    @SecurityRequirement(name= "JWT")
+    public ResponseEntity<SuccessResponse<Void>> deleteExchangeNotice(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody RejectStockmonExchangeRequestDto requestDto) {
+        exchangeNoticeService.deleteExchangeNotice(requestDto.getNoticeId());
+
+        SuccessResponse<Void> response = SuccessResponse.<Void>builder()
+                .data(null)
+                .message("교환 거절 성공")
                 .timestamp(new Date())
                 .build();
 
