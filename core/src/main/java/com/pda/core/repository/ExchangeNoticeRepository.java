@@ -17,4 +17,6 @@ public interface ExchangeNoticeRepository extends JpaRepository<ExchangeNotice, 
 
     @Query("SELECT e FROM ExchangeNotice e WHERE e.id = :noticeId AND e.receiver.id = :receiverId")
     Optional<ExchangeNotice> findByIdAndReceiverId(@Param("noticeId") Long noticeId, @Param("receiverId") Long receiverId);
+
+    void deleteById(Long id);
 }
