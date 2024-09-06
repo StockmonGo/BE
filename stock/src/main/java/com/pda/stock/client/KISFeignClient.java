@@ -1,8 +1,8 @@
 package com.pda.stock.client;
 
+import com.pda.stock.dto.StockChartDto;
 import com.pda.stock.dto.StockInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,16 +31,16 @@ public interface KISFeignClient {
             @RequestHeader("custtype") String custType,
             @RequestHeader("Content-Type") String contentType);
 
-    @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice")
-    default ResponseEntity<String> getMonthChart(String code,
-                                         String token,
-                                         String appKey,
-                                         String appSecret) {
+    @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-price")
+    default StockChartDto getMonthChart(String code,
+                                                        String token,
+                                                        String appKey,
+                                                        String appSecret) {
         return getMonthChart(code, "J", "M", "0", token, appKey, appSecret, "FHKST01010400");
     }
 
     @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice")
-    ResponseEntity<String> getMonthChart(@RequestParam("FID_INPUT_ISCD") String code,
+    StockChartDto getMonthChart(@RequestParam("FID_INPUT_ISCD") String code,
                                                  @RequestParam("FID_COND_MRKT_DIV_CODE") String type,
                                                  @RequestParam("FID_PERIOD_DIV_CODE") String period,
                                                  @RequestParam("FID_ORG_ADJ_PRC") String update,
