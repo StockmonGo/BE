@@ -5,6 +5,7 @@ import com.pda.core.dto.*;
 import com.pda.core.service.StockmonService;
 import com.pda.core.service.TravelerService;
 import com.pda.core.service.TravelerStockmonService;
+import com.pda.core.service.YardService;
 import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.Date;
@@ -25,12 +26,14 @@ public class TravelerStockmonController {
     private final TravelerStockmonService travelerStockmonService;
     private final StockmonService stockmonService;
     private final TravelerService travelerService;
+    private final YardService yardService;
 
     public TravelerStockmonController(TravelerStockmonService travelerStockmonService,
-                                      StockmonService stockmonService, TravelerService travelerService) {
+                                      StockmonService stockmonService, TravelerService travelerService, YardService yardService) {
         this.travelerStockmonService = travelerStockmonService;
         this.stockmonService = stockmonService;
         this.travelerService = travelerService;
+        this.yardService = yardService;
     }
 
     @GetMapping("/stockmons")
@@ -88,6 +91,23 @@ public class TravelerStockmonController {
                         .message("포획 성공")
                         .timestamp(new Date())
                         .build());
+    }
+
+    @GetMapping("/stockmons/yard")
+    @Operation(summary = "스톡몬 마당 조회 API")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<SuccessResponse<YardStockmonResponseDto>> getYardStockmons(
+            @RequestHeader(TRAVELER_ID) Long travelerId) {
+
+        YardStockmonResponseDto yardStockmonResponseDto = yardService.getYardByTravelerId(travelerId);
+
+        SuccessResponse<YardStockmonResponseDto> response = SuccessResponse.<YardStockmonResponseDto>builder()
+                .data(yardStockmonResponseDto)
+                .message("성공")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 }
