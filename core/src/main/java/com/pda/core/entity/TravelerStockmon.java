@@ -7,21 +7,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Setter
+@AllArgsConstructor
+@Builder
 public class TravelerStockmon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     private Long stockmonCount;
 
+    @Setter
     private Double stockmonAveragePrice;
 
     @ManyToOne
@@ -34,5 +36,7 @@ public class TravelerStockmon {
 
     private LocalDateTime createdAt;
 
+    @Setter
     private LocalDateTime updatedAt;
+
 }

@@ -17,11 +17,12 @@ import com.pda.core.repository.StockmonRepository;
 import com.pda.core.repository.TravelerRepository;
 import com.pda.core.repository.TravelerStockmonRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ExchangeNoticeService {
@@ -90,14 +91,14 @@ public class ExchangeNoticeService {
             Stockmon stockmon = stockmonRepository.findById(stockmonId)
                     .orElseThrow(NoStockmonException::new);
 
-            //TODO: SETTER 관련 논의 필요, 없던 스톡몬이면 새로 생성하는 부분
-            TravelerStockmon newTravelerStockmon = new TravelerStockmon();
-            newTravelerStockmon.setTraveler(traveler);
-            newTravelerStockmon.setStockmon(stockmon);
-            newTravelerStockmon.setStockmonCount(delta);
-            newTravelerStockmon.setStockmonAveragePrice(0.0);
-            newTravelerStockmon.setCreatedAt(LocalDateTime.now());
-            newTravelerStockmon.setUpdatedAt(LocalDateTime.now());
+            TravelerStockmon newTravelerStockmon = TravelerStockmon.builder()
+                    .traveler(traveler)
+                    .stockmon(stockmon)
+                    .stockmonCount(delta)
+                    .stockmonAveragePrice(0.0)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now()).build();
+
             travelerStockmonRepository.save(newTravelerStockmon);
         } else {
             throw new InvalidExchangeRequestException();

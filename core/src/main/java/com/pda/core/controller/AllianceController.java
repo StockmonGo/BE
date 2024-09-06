@@ -2,9 +2,9 @@ package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
 
+import com.pda.core.dto.alliance.GetTravelerAllianceListResponseDto;
 import com.pda.core.dto.alliance_notice.AllianceNoticeIdDto;
 import com.pda.core.dto.alliances.AllianceIdDto;
-import com.pda.core.dto.alliances.GetTravelerAlliancesListResponseDto;
 import com.pda.core.service.AllianceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -13,6 +13,7 @@ public class World {
     private Double latitude;
     private Double longitude;
     private Long stockmonId;
+    @Setter
     private Boolean isCaught;
 
     private Date createdAt;
