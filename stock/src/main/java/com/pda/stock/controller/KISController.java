@@ -17,7 +17,7 @@ public class KISController {
     private final KISService kisService;
 
     @GetMapping("/total-price/{code}")
-    public ResponseEntity<Long> getStockTotalPrice(@PathVariable String code) {
+    public ResponseEntity<Long> getStockTotalPrice(@PathVariable("code") String code) {
         return ResponseEntity.ok().body(kisService.getStockTotalPrice(code));
     }
 
