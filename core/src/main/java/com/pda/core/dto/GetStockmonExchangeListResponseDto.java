@@ -1,5 +1,6 @@
 package com.pda.core.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,7 @@ public class GetStockmonExchangeListResponseDto {
         private Long noticeId;
         private Long senderId;
         private Long senderStockmonId;
+        private LocalDateTime createAt;
     }
 
 }

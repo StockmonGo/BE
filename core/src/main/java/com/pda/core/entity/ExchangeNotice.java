@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +34,7 @@ public class ExchangeNotice {
     @ManyToOne
     @JoinColumn(name = "sender_stockmon_id")
     private Stockmon senderStockmon;
+
+    private LocalDateTime createdAt;
 
 }

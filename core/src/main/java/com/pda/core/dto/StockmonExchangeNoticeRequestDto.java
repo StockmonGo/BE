@@ -3,6 +3,7 @@ package com.pda.core.dto;
 import com.pda.core.entity.ExchangeNotice;
 import com.pda.core.entity.Stockmon;
 import com.pda.core.entity.Traveler;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class StockmonExchangeNoticeRequestDto {
                 .sender(new Traveler(senderId))
                 .receiver(new Traveler(receiverId))
                 .senderStockmon(new Stockmon(travelerStockmonId))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }
