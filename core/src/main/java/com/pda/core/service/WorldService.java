@@ -6,6 +6,7 @@ import com.pda.core.dto.GetWorldStockmonsRequestDto;
 import com.pda.core.entity.World;
 import com.pda.core.repository.RedisRepository;
 import com.pda.core.utils.RandomUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,7 @@ public class WorldService {
 
 
     @Scheduled(cron = "0 0 * * * *")
+    @Transactional
     public void setWorld() throws JsonProcessingException {
         List<Object> list = new ArrayList<>();
         long count = 0;
@@ -105,32 +107,54 @@ public class WorldService {
     }
 
     @Scheduled(cron = "0 * * * * *")
+    @Transactional
     public void reGenerate() throws JsonProcessingException {
         List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
         boolean isChanged = false;
-        for(int i = 0; i < list.size(); i++) {
-            World world = list.get(i);
+        System.out.println("time");
+        double latitude = Double.parseDouble(MIN_LATITUDE_STRING);
+        double nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + STOCKMON_LATITUDE_DIFF;
 
-            if(world.getIsCaught()) {
-                isChanged = true;
-                long currentTimeMillis = System.currentTimeMillis();
-                World newWorld = World.builder()
-                        .id(world.getId())
-                        .latitude(RandomUtil.createRandomDouble(Double.parseDouble(MIN_LATITUDE_STRING) + i * STOCKMON_LATITUDE_DIFF,
-                                Double.parseDouble(MIN_LATITUDE_STRING) + (i + 1) * STOCKMON_LATITUDE_DIFF))
-                        .longitude(RandomUtil.createRandomDouble(Double.parseDouble(MIN_LONGITUDE_STRING) + i * STOCKMON_LONGITUDE_DIFF,
-                                Double.parseDouble(MIN_LONGITUDE_STRING) + (i + 1) * STOCKMON_LONGITUDE_DIFF))
-                        .createdAt(world.getCreatedAt())
-                        .updatedAt(new Date(currentTimeMillis))
-                        .isCaught(false)
-                        .stockmonId(RandomUtil.createRandomInt(1, 58))
-                        .build();
-                list.set(i, newWorld);
+        int count = 0;
+        for(int i = 1; nextLatitude <= Double.parseDouble(MAX_LATITUDE_STRING); i++) {
+            double longitude = Double.parseDouble(MIN_LONGITUDE_STRING);
+            double nextLongitude = Double.parseDouble(MIN_LONGITUDE_STRING) + STOCKMON_LONGITUDE_DIFF;
+            for(int j = 1; nextLongitude <= Double.parseDouble(MAX_LONGITUDE_STRING); j++ ) {
+
+                World world = list.get(count);
+
+                if(world.getIsCaught()) {
+                    isChanged = true;
+                    long currentTimeMillis = System.currentTimeMillis();
+
+                    World newWorld = World.builder()
+                            .id(world.getId())
+                            .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
+                            .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
+                            .createdAt(world.getCreatedAt())
+                            .updatedAt(new Date(currentTimeMillis))
+                            .isCaught(false)
+                            .stockmonId(RandomUtil.createRandomInt(1, 58))
+                            .build();
+
+
+                    list.set(count, newWorld);
+                }
+
+                longitude = nextLongitude;
+                nextLongitude = Double.parseDouble(MIN_LONGITUDE_STRING) + (j + 1) * STOCKMON_LONGITUDE_DIFF;
+                count++;
             }
+            latitude = nextLatitude;
+            nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + (i + 1) * STOCKMON_LATITUDE_DIFF;
 
         }
+        if(isChanged) {
+            redisRepository.setToListAll(WORLD_REDIS_KEY, list);
+        }
 
-        if(isChanged) redisRepository.setToListAll(WORLD_REDIS_KEY, list);
+
+
     }
 
 
