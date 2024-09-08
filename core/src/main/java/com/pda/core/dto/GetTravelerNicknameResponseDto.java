@@ -8,12 +8,12 @@ import lombok.Getter;
 @Builder
 public class GetTravelerNicknameResponseDto {
 
-    private Long id;
+    private Long travelerId;
     private String nickname;
 
     public static GetTravelerNicknameResponseDto fromEntity(Traveler traveler) {
         return GetTravelerNicknameResponseDto.builder()
-                .id(traveler.getId())
+                .travelerId(traveler.getId())
                 .nickname(traveler.getNickname())
                 .build();
     }

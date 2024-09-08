@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface TravelerAllianceRepository extends JpaRepository<TravelerAlliance, Long> {
 
-    @Query("SELECT DISTINCT t.id AS id, t.nickname AS nickname FROM TravelerAlliance ta1 " +
+    @Query("SELECT DISTINCT t.id AS travelerId, t.nickname AS nickname FROM TravelerAlliance ta1 " +
             "JOIN TravelerAlliance ta2 ON ta1.alliance.id = ta2.alliance.id " +
             "AND ta1.traveler.id <> ta2.traveler.id " +
             "JOIN Traveler t ON ta2.traveler.id = t.id " +
