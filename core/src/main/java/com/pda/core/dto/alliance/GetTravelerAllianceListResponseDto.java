@@ -2,6 +2,6 @@ package com.pda.core.dto.alliance;
 
 
 public interface GetTravelerAllianceListResponseDto {
-    Long getId();
+    Long getTravelerId();
     String getNickname();
 }
