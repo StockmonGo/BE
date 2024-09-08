@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 
 @Getter
 @Builder
@@ -23,6 +25,7 @@ public class AllianceNoticeDto {
                 .id(id)
                 .sender(sender)
                 .receiver(receiver)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 

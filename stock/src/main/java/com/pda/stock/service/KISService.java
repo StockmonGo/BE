@@ -52,4 +52,8 @@ public class KISService {
         return stockChartResponseDtos;
     }
 
+    public long getStockClosedPrice(String code){
+        return Long.parseLong(kisFeignClient.getMonthChart(code,"Bearer "+TOKEN, APP_KEY, APP_SECRET).getOutput()[0].getValue());
+    }
+
 }

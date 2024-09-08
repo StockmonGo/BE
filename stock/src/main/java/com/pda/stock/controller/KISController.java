@@ -42,4 +42,9 @@ public class KISController {
                         .build());
     }
 
+    @GetMapping("/closed-price/{code}")
+    public ResponseEntity<Long> getStockClosedPrice(@PathVariable("code") String code){
+        return ResponseEntity.ok().body(kisService.getStockClosedPrice(code));
+    }
+
 }
