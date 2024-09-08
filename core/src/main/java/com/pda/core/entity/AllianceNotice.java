@@ -27,6 +27,7 @@ public class AllianceNotice {
     @JoinColumn(name = "receiver_id")
     private Traveler receiver;
 
+    @JoinColumn(name = "created_at")
     private LocalDateTime createdAt;
 
 }

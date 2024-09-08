@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface AllianceNoticeRepository extends JpaRepository<AllianceNotice,Long> {
 
-    @Query("SELECT an.id AS noticeId, t.nickname AS nickName, an.createdAt AS createAt " +
+    @Query("SELECT an.id AS noticeId, t.nickname AS nickName, an.createdAt AS createdAt " +
             "FROM AllianceNotice an " +
             "JOIN Traveler t ON an.sender.id = t.id " +
             "WHERE an.receiver.id = :travelerId")
