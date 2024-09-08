@@ -88,7 +88,6 @@ public class TravelerController {
        travelerService.remove(travelerId);
        return ResponseEntity.ok().body(SuccessResponse.<Object>builder()
                        .data(null)
-                       .data(null)
                        .message("회원 탈퇴 완료")
                        .timestamp(new Date())
                .build());
