@@ -16,4 +16,7 @@ public interface StockFeignClient {
 
     @GetMapping("/current-price/{code}")
     ResponseEntity<Long> getCurrentPrice(@PathVariable("code") String code);
+
+    @GetMapping("/closed-price/{code}")
+    ResponseEntity<Long> getClosedPrice(@PathVariable("code") String code);
 }
