@@ -44,7 +44,7 @@ public class KISService {
             String date = output.getDate();
 
             stockChartResponseDtos.add(StockChartResponseDto.builder()
-                    .date(date.substring(0,4) + "-" + date.substring(4,6) + "-" + date.substring(6))
+                    .time(date.substring(0,4) + "-" + date.substring(4,6) + "-" + date.substring(6))
                     .value(Long.parseLong(output.getValue()))
                     .build());
 

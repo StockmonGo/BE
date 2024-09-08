@@ -80,9 +80,9 @@ public class TravelerStockmonController {
     }
 
     @PostMapping("/stockmons")
+    @Operation(summary = "스톡몬 포획")
+    @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<CatchStockmonResponseDto>> catchStockmon(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody CatchStockmonRequestDto catchStockmonRequestDto) {
-
-
         CatchStockmonResponseDto catchStockmonResponseDto = travelerStockmonService.updateCatchStockmon(travelerId, catchStockmonRequestDto);
 
         return ResponseEntity.ok()
