@@ -39,7 +39,7 @@ public class KISService {
     public List<StockChartResponseDto> getStockChart(String code) {
         StockChartDto stockChartDto = kisFeignClient.getMonthChart(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
         List<StockChartResponseDto> stockChartResponseDtos = new ArrayList<>();
-        for(int i = 0; i < 6; i++) {
+        for(int i = 5; i >= 0; i--) {
             StockChartDto.Output output = stockChartDto.getOutput()[i];
             String date = output.getDate();
 
