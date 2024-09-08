@@ -3,6 +3,7 @@ package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.*;
+import com.pda.core.entity.Account;
 import com.pda.core.entity.Traveler;
 import com.pda.core.exception.NoTravelerException;
 import com.pda.core.service.CustomUserDetailService;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,10 +88,25 @@ public class TravelerController {
        travelerService.remove(travelerId);
        return ResponseEntity.ok().body(SuccessResponse.<Object>builder()
                        .data(null)
-                       .data(null)
                        .message("회원 탈퇴 완료")
                        .timestamp(new Date())
                .build());
+    }
+
+
+    @Operation(summary = "튜토리얼 영상 시청 완료 API")
+    @SecurityRequirement(name = JWT)
+    @PostMapping("/tutorial")
+    public ResponseEntity<SuccessResponse<Void>> setTutorialWatched(@RequestHeader(TRAVELER_ID) Long travelerId) {
+        travelerService.setTutorialWatched(travelerId);
+
+        SuccessResponse<Void> response = SuccessResponse.<Void>builder()
+                .data(null)
+                .message("영상 시청 완료")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok().body(response);
     }
 
 }

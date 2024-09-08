@@ -25,6 +25,7 @@ public class JoinRequestDto {
                 .nickname(nickname)
                 .password(bCryptPasswordEncoder.encode(password))
                 .stockballCount(20L)
+                .tutorialWatched(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
