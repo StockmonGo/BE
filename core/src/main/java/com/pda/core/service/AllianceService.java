@@ -2,6 +2,7 @@ package com.pda.core.service;
 
 import com.pda.core.dto.alliance.GetTravelerAllianceListResponseDto;
 import com.pda.core.dto.alliance_notice.AllianceNoticeDto;
+import com.pda.core.dto.alliance_notice.GetAllianceNoticeListResponseDto;
 import com.pda.core.dto.alliances.AllianceDto;
 import com.pda.core.dto.alliances.TravelerAllianceDto;
 import com.pda.core.entity.Alliance;
@@ -35,12 +36,19 @@ public class AllianceService {
 
 
     @Transactional
-    public List<GetTravelerAllianceListResponseDto> getAlliances( Long travelerId){
+    public List<GetTravelerAllianceListResponseDto> getAlliances(Long travelerId){
         List<GetTravelerAllianceListResponseDto> travelerAllianceList = travelerAllianceRepository.findNicknamesByAllianceId(travelerId).orElseThrow();
 
 
         return travelerAllianceList;
 
+    }
+
+    public List<GetAllianceNoticeListResponseDto> getAllianceNoticeList(Long travelerId){
+        List<GetAllianceNoticeListResponseDto> getAllianceNoticeListResponseDto =
+                allianceNoticeRepository.findAllianceNoticeListByTravelerId(travelerId).orElseThrow();
+
+        return getAllianceNoticeListResponseDto;
     }
 
     @Transactional
