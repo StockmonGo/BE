@@ -35,6 +35,9 @@ public class Traveler {
     private String role;
 
     @Setter
+    private Boolean tutorialWatched;
+
+    @Setter
     private Long stockballCount;
 
     private LocalDateTime createdAt;
