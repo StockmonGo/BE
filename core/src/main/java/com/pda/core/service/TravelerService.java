@@ -66,4 +66,12 @@ public class TravelerService {
 
     }
 
+    public void setTutorialWatched(Long travelerId) {
+        Traveler traveler = travelerRepository.findById(travelerId)
+                .orElseThrow((NoTravelerException::new));
+
+        traveler.setTutorialWatched(true);
+        travelerRepository.save(traveler);
+    }
+
 }
