@@ -14,13 +14,18 @@ import lombok.NoArgsConstructor;
 public class CatchStockmonResponseDto {
 
     private Long stockmonId;
+    private String stockCode;
     private String stockmonName;
-    private String stockType;
+    private String description;
+    private Long stockType;
+    private String stockTypeName;
     private Long stockPrice;
     private Long stockTotalPrice;
     private String stockMarket;
 
     public static CatchStockmonResponseDto fromEntity(Stockmon stockmon, Long stockCurrentPrice, Long stockTotalPrice) {
-        return new CatchStockmonResponseDto(stockmon.getId(), stockmon.getName(), stockmon.getStock().getStockType().getName(), stockCurrentPrice,stockTotalPrice, stockmon.getStock().getStockMarket());
+        return new CatchStockmonResponseDto(stockmon.getId(), stockmon.getStock().getCode(), stockmon.getName(), stockmon.getDescription(),
+                stockmon.getStock().getStockType().getId(), stockmon.getStock().getStockType().getName(),
+                stockCurrentPrice,stockTotalPrice, stockmon.getStock().getStockMarket());
     }
 }
