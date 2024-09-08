@@ -24,8 +24,10 @@ public class GetStockmonExchangeListResponseDto {
     public static class StockmonExchange {
         private Long noticeId;
         private Long senderId;
+        private String senderNickname;
         private Long senderStockmonId;
         private LocalDateTime createAt;
+
     }
 
 }
