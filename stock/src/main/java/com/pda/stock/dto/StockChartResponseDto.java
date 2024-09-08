@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class StockChartResponseDto {
-    private String date;
+    private String time;
     private Long value;
 }
