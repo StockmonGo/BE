@@ -1,11 +1,8 @@
 package com.pda.core.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +27,24 @@ public class Account {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "account")
+    @JsonIgnoreProperties("account")
+    private Traveler traveler;
+
     @OneToMany(mappedBy = "account")
     @JsonIgnoreProperties("account")
     @Builder.Default
     private List<AccountStock> accountStocks = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
