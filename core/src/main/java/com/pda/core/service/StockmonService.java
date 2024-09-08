@@ -27,7 +27,7 @@ public class StockmonService {
         GetStockmonDetailFromDbDto dbDto = stockmonRepository.findStockmonDetailById(id, travelerId)
                 .orElseThrow(NoStockmonDetailException::new);
 
-        return GetStockmonDetailResponseDto.from(dbDto, stockFeignClient.getTotalPrice(dbDto.getStockCode()).getBody());
+        return GetStockmonDetailResponseDto.from(dbDto, stockFeignClient.getTotalPrice(dbDto.getStockCode()).getBody(),stockFeignClient.getClosedPrice(dbDto.getStockCode()).getBody());
     }
 
 }
