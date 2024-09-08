@@ -22,6 +22,9 @@ public class StockChartDto {
 
         @JsonProperty("stck_bsop_date")
         private String date;
+
+        @JsonProperty("stck_prdy_hgpr")
+        private String closedPrice;
     }
 
 }
