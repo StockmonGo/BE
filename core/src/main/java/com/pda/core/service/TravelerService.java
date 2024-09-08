@@ -10,6 +10,7 @@ import com.pda.core.exception.DuplicateTravelerException;
 import com.pda.core.exception.NoTravelerException;
 import com.pda.core.repository.TravelerRepository;
 import jakarta.transaction.Transactional;
+
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class TravelerService {
     private final TravelerRepository travelerRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private static final long INVITER_PRESENT = 20;
+    private static final long MAX_BALL = 50;
 
     @Transactional
     public Optional<GetTravelerNicknameResponseDto> findTravelerByNickname(String nickname) {
@@ -45,9 +47,10 @@ public class TravelerService {
 
         Traveler traveler = travelerRepository.save(joinRequestDTO.toEntity(bCryptPasswordEncoder));
 
-        // TODO : 일단 초대인 보상으로 스톡볼 20개 더 주는 걸로 하긴 했는데.. 얘기 좀 더 해봐야할 듯
         if(inviterNickname != null) {
-                travelerRepository.addStockball(inviterNickname, INVITER_PRESENT);
+                travelerRepository.findByNickname(inviterNickname).ifPresent(traveler1 -> {
+                    travelerRepository.addStockball(inviterNickname, Math.min(INVITER_PRESENT, MAX_BALL - traveler1.getStockballCount()));
+                });
         }
         return JoinResponseDto.fromEntity(traveler);
     }
