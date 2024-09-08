@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -24,5 +26,7 @@ public class AllianceNotice {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private Traveler receiver;
+
+    private LocalDateTime createdAt;
 
 }
