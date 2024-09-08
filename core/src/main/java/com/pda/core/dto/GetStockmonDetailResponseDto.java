@@ -18,9 +18,10 @@ public class GetStockmonDetailResponseDto {
     private Long stockmonAveragePrice;
     private Long catchCount;
     private Long stockTotalPrice;
+    private Long stockClosedPrice;
     private String stockMarket;
 
-    public static GetStockmonDetailResponseDto from(GetStockmonDetailFromDbDto dbDto, Long totalPrice) {
+    public static GetStockmonDetailResponseDto from(GetStockmonDetailFromDbDto dbDto, Long totalPrice, Long closedPrice) {
         return GetStockmonDetailResponseDto.builder()
                 .stockmonId(dbDto.getStockmonId())
                 .stockmonName(dbDto.getStockmonName())
@@ -32,6 +33,7 @@ public class GetStockmonDetailResponseDto {
                 .stockCode(dbDto.getStockCode())
                 .stockmonAveragePrice(convertToLong(dbDto.getStockmonAveragePrice()))
                 .catchCount(dbDto.getCatchCount())
+                .stockClosedPrice(closedPrice)
                 .stockTotalPrice(totalPrice)
                 .stockMarket(dbDto.getStockMarket())
                 .build();
