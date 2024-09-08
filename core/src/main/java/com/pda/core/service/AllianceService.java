@@ -37,7 +37,8 @@ public class AllianceService {
 
     @Transactional
     public List<GetTravelerAllianceListResponseDto> getAlliances(Long travelerId){
-        List<GetTravelerAllianceListResponseDto> travelerAllianceList = travelerAllianceRepository.findNicknamesByAllianceId(travelerId).orElseThrow();
+        List<GetTravelerAllianceListResponseDto> travelerAllianceList =
+                travelerAllianceRepository.findTravelerAllianceDataByTravelerId(travelerId).orElseThrow();
 
 
         return travelerAllianceList;
