@@ -106,13 +106,14 @@ public class AllianceService {
 
         // TravelerAlliance를 저장합니다.
         travelerAllianceRepository.saveAll(travelerAlliances);
+        allianceNoticeRepository.deleteById(noticeId);
 
         return true;
     }
 
     @Transactional
     public Boolean rejectAlliance(Long noticeId){
-        allianceNoticeRepository.deleteById(2L);
+        allianceNoticeRepository.deleteById(noticeId);
         return true;
     }
 
