@@ -20,7 +20,6 @@ public class StockController {
         System.out.println("stock controller: " + id);
 
         // 소켓 및 주식 관련 작업
-        webSocketEventListener.connectSocket(id);
         webSocketEventListener.connectStock(id);
     }
 
