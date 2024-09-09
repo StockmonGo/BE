@@ -88,7 +88,7 @@ public class ExchangeNoticeController {
     @Operation(summary = "스톡몬 교환 거절 API")
     @SecurityRequirement(name= "JWT")
     public ResponseEntity<SuccessResponse<Void>> deleteExchangeNotice(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody RejectStockmonExchangeRequestDto requestDto) {
-        exchangeNoticeService.deleteExchangeNotice(requestDto.getNoticeId());
+        exchangeNoticeService.rejectExchange(requestDto.getNoticeId(), travelerId);
 
         SuccessResponse<Void> response = SuccessResponse.<Void>builder()
                 .data(null)
