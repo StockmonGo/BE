@@ -42,7 +42,10 @@ public class ExchangeNoticeService {
         this.stockmonRepository = stockmonRepository;
     }
 
+    @Transactional
     public ExchangeNotice createExchangeNotice(StockmonExchangeNoticeRequestDto requestDto, Long loggedInUserId) {
+
+        updateStockmonCount(loggedInUserId, requestDto.getTravelerStockmonId(), -1L);
         ExchangeNotice exchangeNotice = requestDto.toEntity(loggedInUserId);
         return exchangeNoticeRepository.save(exchangeNotice);
     }
@@ -64,15 +67,12 @@ public class ExchangeNoticeService {
 
         updateStockmonCount(loggedInUserId, notice.getSenderStockmon().getId(), 1L);
 
-        updateStockmonCount(notice.getSender().getId(), notice.getSenderStockmon().getId(), -1L);
-
         updateStockmonCount(notice.getSender().getId(), requestDto.getTravelerStockmonId(), 1L);
-
-        exchangeNoticeRepository.delete(notice);
 
         return new AcceptStockmonExchangeResponseDto(true);
     }
 
+    @Transactional
     private void updateStockmonCount(Long travelerId, Long stockmonId, Long delta) {
         Optional<TravelerStockmon> optionalTravelerStockmon = travelerStockmonRepository
                 .findByTravelerIdAndStockmonId(travelerId, stockmonId);
@@ -108,8 +108,14 @@ public class ExchangeNoticeService {
     }
 
     @Transactional
-    public void deleteExchangeNotice(Long noticeId) {
-        exchangeNoticeRepository.deleteById(noticeId);
+    public void rejectExchange(Long noticeId, Long loggedInUserId) {
+        ExchangeNotice notice = exchangeNoticeRepository.findByIdAndReceiverId(noticeId, loggedInUserId)
+                .orElseThrow(NoTravelerException::new);
+
+        // 요청자의 스톡몬 개수를 다시 증가
+        updateStockmonCount(notice.getSender().getId(), notice.getSenderStockmon().getId(), 1L);
+
+        exchangeNoticeRepository.delete(notice);
     }
 
 }
