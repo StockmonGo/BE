@@ -69,6 +69,8 @@ public class ExchangeNoticeService {
 
         updateStockmonCount(notice.getSender().getId(), requestDto.getTravelerStockmonId(), 1L);
 
+        exchangeNoticeRepository.delete(notice);
+
         return new AcceptStockmonExchangeResponseDto(true);
     }
 
