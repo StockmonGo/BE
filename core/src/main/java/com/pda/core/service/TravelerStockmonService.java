@@ -1,16 +1,12 @@
 package com.pda.core.service;
 
 import com.pda.core.client.StockFeignClient;
-import com.pda.core.dto.CatchStockmonRequestDto;
-import com.pda.core.dto.CatchStockmonResponseDto;
+import com.pda.core.dto.*;
 import com.pda.core.entity.*;
 import com.pda.core.exception.InvalidStockballCountException;
 import com.pda.core.exception.NoStockmonDetailException;
 import com.pda.core.exception.NoTravelerException;
 import com.pda.core.repository.*;
-import com.pda.core.dto.GetStockmonListResponseDto;
-import com.pda.core.dto.TravelerStockmonDto;
-import com.pda.core.entity.Stock;
 import com.pda.core.entity.Stockmon;
 import com.pda.core.entity.TravelerStockmon;
 import jakarta.transaction.Transactional;
@@ -48,6 +44,16 @@ public class TravelerStockmonService {
 
         return new GetStockmonListResponseDto(travelerStockmonDtos);
 
+    }
+
+    @Transactional
+    public void decreaseStockball(Long travelerId, DecreaseCountRequestDto decreaseCountRequestDto) {
+
+        Traveler traveler = travelerRepository.findById(travelerId).orElseThrow(NoTravelerException::new);
+        long usedStockball = decreaseCountRequestDto.getUsedStockball();
+
+        if(traveler.getStockballCount() < usedStockball) throw new InvalidStockballCountException();
+        travelerRepository.minusStockball(travelerId, usedStockball);
     }
 
     @Transactional
