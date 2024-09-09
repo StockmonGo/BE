@@ -8,6 +8,11 @@ public class WorldConstant {
     public static final String MIN_LONGITUDE_STRING = "126.76605328501563";
     public static final String MAX_LONGITUDE_STRING = "127.21925741327027";
 
+    public static final double MAIN_STREET_MAX_LATITUDE = 37.54722669660169;
+    public static final double MAIN_STREET_MIN_LATITUDE = 37.54038635869737;
+    public static final double MAIN_STREET_MIN_LONGITUDE = 127.04736633463418;
+    public static final double MAIN_STREET_MAX_LONGITUDE = 127.0691774380748;
+
     public static final double STOCKMON_LATITUDE_DIFF = 0.0016;
     public static final double STOCKMON_LONGITUDE_DIFF = 0.001;
 

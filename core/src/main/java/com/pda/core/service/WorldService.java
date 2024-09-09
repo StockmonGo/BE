@@ -25,10 +25,17 @@ public class WorldService {
 
     private final RedisRepository redisRepository;
     private final int MAX_LNG = (int) ((Double.parseDouble(MAX_LONGITUDE_STRING) - Double.parseDouble(MIN_LONGITUDE_STRING)) / STOCKMON_LONGITUDE_DIFF);
+    private final int MAX_STREET_LNG = (int) ((MAIN_STREET_MAX_LONGITUDE - MAIN_STREET_MIN_LONGITUDE) / STOCKMON_LONGITUDE_DIFF);
     private final int[] dIndex = {
             -MAX_LNG, -MAX_LNG - 1, -MAX_LNG + 1,
             0, -1, 1,
             MAX_LNG, MAX_LNG - 1, MAX_LNG + 1};
+    private final int[] mIndex = {
+            -MAX_STREET_LNG, -MAX_STREET_LNG - 1, MAX_STREET_LNG + 1,
+            0, -1, 1,
+            MAX_STREET_LNG, MAX_STREET_LNG - 1, MAX_STREET_LNG + 1
+    };
+    private final int GENERAL_MAX = 87429;
 
 
     public List<World> getNearWorlds(GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
@@ -41,6 +48,9 @@ public class WorldService {
         BigDecimal stockmonLongitudeDiff = BigDecimal.valueOf(STOCKMON_LONGITUDE_DIFF);
         BigDecimal stockmonLatitudeMin = BigDecimal.valueOf(Double.parseDouble(MIN_LATITUDE_STRING));
         BigDecimal stockmonLongitudeMin = BigDecimal.valueOf(Double.parseDouble(MIN_LONGITUDE_STRING));
+
+        BigDecimal streetLatitudeMin = BigDecimal.valueOf(MAIN_STREET_MIN_LATITUDE);
+        BigDecimal streetLongitudeMin = BigDecimal.valueOf(MAIN_STREET_MIN_LONGITUDE);
 
         int userLat = latitude
                 .subtract(stockmonLatitudeMin)
@@ -56,7 +66,23 @@ public class WorldService {
 
         for (int i = 0; i < dIndex.length; i++) {
             int idx = index + dIndex[i];
-            if (validIndex(idx, list)) newList.add(list.get(idx));
+
+            if(validIndex(idx, list)) newList.add(list.get(idx));
+        }
+
+        if(isMainStreet(latitude.doubleValue(), longitude.doubleValue())) {
+            int streetLat = latitude
+                    .subtract(streetLatitudeMin)
+                    .divide(stockmonLatitudeDiff, RoundingMode.HALF_UP)
+                    .intValue();
+            int streetLong = longitude
+                    .subtract(streetLongitudeMin)
+                    .divide(stockmonLongitudeDiff, RoundingMode.HALF_UP)
+                    .intValue();
+            for(int i = 0; i < mIndex.length; i++) {
+                int streetIndex = streetLat * MAX_STREET_LNG + streetLong + mIndex[i];
+                if (validIndex(streetIndex, list)) newList.add(list.get(GENERAL_MAX + streetIndex));
+            }
         }
 
         return newList;
@@ -68,42 +94,58 @@ public class WorldService {
         return !list.get(index).getIsCaught();
     }
 
-
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void setWorld() throws JsonProcessingException {
         List<Object> list = new ArrayList<>();
+        List<World> tmpList = new ArrayList<>();
         long count = 0;
+        System.out.println("test");
         double latitude = Double.parseDouble(MIN_LATITUDE_STRING);
         double nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + STOCKMON_LATITUDE_DIFF;
+        int tmp = 0;
 
         for(int i = 1; nextLatitude <= Double.parseDouble(MAX_LATITUDE_STRING); i++) {
-
             double longitude = Double.parseDouble(MIN_LONGITUDE_STRING);
             double nextLongitude = Double.parseDouble(MIN_LONGITUDE_STRING) + STOCKMON_LONGITUDE_DIFF;
             for(int j = 1; nextLongitude <= Double.parseDouble(MAX_LONGITUDE_STRING); j++ ) {
-                long currentTimeMillis = System.currentTimeMillis();
-
-                World newWorld = World.builder()
-                        .id(count++)
-                        .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
-                        .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
-                        .createdAt(new Date(currentTimeMillis))
-                        .updatedAt(new Date(currentTimeMillis))
-                        .isCaught(false)
-                        .stockmonId(RandomUtil.createRandomInt(1, 58))
-                        .build();
-
-                list.add(newWorld);
+                list.add(getNewWorld(count, latitude, longitude, nextLatitude, nextLongitude));
+                if(isMainStreet(latitude, longitude)) {
+                    tmpList.add(getNewWorld(GENERAL_MAX + tmp, latitude, longitude, nextLatitude, nextLongitude));
+                    tmp++;
+                }
+                count++;
 
                 longitude = nextLongitude;
                 nextLongitude = Double.parseDouble(MIN_LONGITUDE_STRING) + (j + 1) * STOCKMON_LONGITUDE_DIFF;
             }
             latitude = nextLatitude;
             nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + (i + 1) * STOCKMON_LATITUDE_DIFF;
-
         }
+        list.addAll(tmpList);
         redisRepository.setToListAll(WORLD_REDIS_KEY, list);
+    }
+
+    private World getNewWorld(long count, double latitude, double longitude, double nextLatitude, double nextLongitude) {
+
+        long currentTimeMillis = System.currentTimeMillis();
+        return World.builder()
+                .id(count)
+                .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
+                .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
+                .createdAt(new Date(currentTimeMillis))
+                .updatedAt(new Date(currentTimeMillis))
+                .isCaught(false)
+                .stockmonId(RandomUtil.createRandomInt(1, 58))
+                .build();
+    }
+
+    private boolean isMainStreet(double latitude, double longitude) {
+
+        return (latitude > MAIN_STREET_MIN_LATITUDE)
+                && latitude < MAIN_STREET_MAX_LATITUDE
+                && longitude > MAIN_STREET_MIN_LONGITUDE
+                && longitude < MAIN_STREET_MAX_LONGITUDE;
     }
 
     @Scheduled(cron = "0 * * * * *")
@@ -111,7 +153,6 @@ public class WorldService {
     public void reGenerate() throws JsonProcessingException {
         List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
         boolean isChanged = false;
-        System.out.println("time");
         double latitude = Double.parseDouble(MIN_LATITUDE_STRING);
         double nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + STOCKMON_LATITUDE_DIFF;
 
@@ -125,20 +166,7 @@ public class WorldService {
 
                 if(world.getIsCaught()) {
                     isChanged = true;
-                    long currentTimeMillis = System.currentTimeMillis();
-
-                    World newWorld = World.builder()
-                            .id(world.getId())
-                            .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
-                            .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
-                            .createdAt(world.getCreatedAt())
-                            .updatedAt(new Date(currentTimeMillis))
-                            .isCaught(false)
-                            .stockmonId(RandomUtil.createRandomInt(1, 58))
-                            .build();
-
-
-                    list.set(count, newWorld);
+                    list.set(count, getReWorld(world, latitude, longitude, nextLatitude, nextLongitude));
                 }
 
                 longitude = nextLongitude;
@@ -149,12 +177,46 @@ public class WorldService {
             nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + (i + 1) * STOCKMON_LATITUDE_DIFF;
 
         }
+
+        for(int i = count; i < list.size(); i++) {
+            World world = list.get(i);
+            if(world.getIsCaught()) {
+                isChanged = true;
+                list.set(i, getReWorld(world));
+            }
+        }
         if(isChanged) {
             redisRepository.setToListAll(WORLD_REDIS_KEY, list);
         }
 
 
 
+    }
+
+    private World getReWorld(World world, double latitude, double longitude, double nextLatitude, double nextLongitude) {
+        long currentTimeMillis = System.currentTimeMillis();
+        return World.builder()
+                .id(world.getId())
+                .latitude(RandomUtil.createRandomDouble(latitude, nextLatitude))
+                .longitude(RandomUtil.createRandomDouble(longitude, nextLongitude))
+                .createdAt(world.getCreatedAt())
+                .updatedAt(new Date(currentTimeMillis))
+                .isCaught(false)
+                .stockmonId(RandomUtil.createRandomInt(1, 58))
+                .build();
+    }
+
+    private World getReWorld(World world) {
+        long currentTimeMillis = System.currentTimeMillis();
+        return World.builder()
+                .id(world.getId())
+                .latitude(world.getLatitude())
+                .longitude(world.getLongitude())
+                .createdAt(world.getCreatedAt())
+                .updatedAt(new Date(currentTimeMillis))
+                .isCaught(false)
+                .stockmonId(RandomUtil.createRandomInt(1, 58))
+                .build();
     }
 
 

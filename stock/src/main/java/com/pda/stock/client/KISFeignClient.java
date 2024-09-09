@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface KISFeignClient {
 
 
-    @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-price")
     default StockInfoDto getStockInfo(String code,
                                                       String token,
                                                       String appKey,
@@ -31,7 +30,6 @@ public interface KISFeignClient {
             @RequestHeader("custtype") String custType,
             @RequestHeader("Content-Type") String contentType);
 
-    @GetMapping("/uapi/domestic-stock/v1/quotations/inquire-daily-price")
     default StockChartDto getMonthChart(String code,
                                                         String token,
                                                         String appKey,
