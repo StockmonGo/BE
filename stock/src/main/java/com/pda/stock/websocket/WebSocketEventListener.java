@@ -49,9 +49,7 @@ public class WebSocketEventListener {
 
     public void connectSocket(String stockCode) throws ExecutionException, InterruptedException, IOException {
         StandardWebSocketClient client = new StandardWebSocketClient();
-        if(webSession!=null){
-            return;
-        }
+
         webSession = client.execute(new TextWebSocketHandler() {
             @Override
             protected void handleTextMessage(WebSocketSession session, TextMessage message) {
@@ -101,7 +99,7 @@ public class WebSocketEventListener {
         webSession.sendMessage(new TextMessage(jsonMessage));
     }
 
-    public void connectStock(String stockCode) throws IOException {
+    public void connectStock(String stockCode) throws IOException, ExecutionException, InterruptedException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         WebSocketMessage dumyMessage = new WebSocketMessage();
@@ -152,13 +150,9 @@ public class WebSocketEventListener {
         String sessionId = headerAccessor.getSessionId();
         System.out.println("handleWebSocketDisconnectListener "+sessionId+" Success");
 
-        sessionIds.remove(sessionId);
         System.out.println(sessionId+" disconnect");
 
-        if(sessionIds.isEmpty()){
-            socketData.clear();
-            webSession.close();
-        }
+
     }
 
 }
