@@ -79,6 +79,20 @@ public class TravelerStockmonController {
 
     }
 
+    @PostMapping("/stockballs")
+    @Operation(summary = "스톡볼 감소")
+    @SecurityRequirement(name = JWT)
+    public ResponseEntity<SuccessResponse<?>> decreaseCount(@RequestHeader(TRAVELER_ID) Long travelerId, @RequestBody DecreaseCountRequestDto decreaseCountRequestDto) {
+
+        travelerStockmonService.decreaseStockball(travelerId, decreaseCountRequestDto);
+        return ResponseEntity.ok()
+                .body(SuccessResponse.builder()
+                        .data(null)
+                        .message("스톡볼 감소 성공")
+                        .timestamp(new Date())
+                        .build());
+    }
+
     @PostMapping("/stockmons")
     @Operation(summary = "스톡몬 포획")
     @SecurityRequirement(name = JWT)
