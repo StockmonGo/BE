@@ -26,6 +26,7 @@ public class GetStockmonExchangeListResponseDto {
         private Long senderId;
         private String senderNickname;
         private Long senderStockmonId;
+        private String senderStockmonName;
         private LocalDateTime createAt;
 
     }
