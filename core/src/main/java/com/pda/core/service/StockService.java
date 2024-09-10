@@ -2,29 +2,30 @@ package com.pda.core.service;
 
 
 import com.pda.core.client.StockFeignClient;
+import com.pda.core.dto.GetTravelerStockListResponseDto;
+import com.pda.core.dto.TravelerStockDto;
 import com.pda.core.exception.NoStockException;
+import com.pda.core.repository.AccountStockRepository;
 import com.pda.core.repository.StockRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class StockService {
 
-    private final StockRepository stockRepository;
-    private final StockFeignClient stockFeignClient;
-//    private static long id = 1;
-//
-//    @Scheduled(cron = "0 * * * * *")
-//    public void caching() {
-//        String code = stockRepository.findById(id).orElseThrow(NoStockException::new).getCode();
-//
-//        stockFeignClient.getCurrentPrice(code);
-//        stockFeignClient.getClosedPrice(code);
-//        stockFeignClient.getTotalPrice(code);
-//        id++;
-//        id %= 60;
-//    }
+    private final AccountStockRepository accountStockRepository;
+
+    public StockService(AccountStockRepository accountStockRepository){
+        this.accountStockRepository = accountStockRepository;
+    }
+
+
+    public GetTravelerStockListResponseDto getTravelerStocks(Long accountId) {
+        List<TravelerStockDto> stocks = accountStockRepository.findStocksByTravelerId(accountId);
+        return new GetTravelerStockListResponseDto(stocks);
+    }
 
 }
