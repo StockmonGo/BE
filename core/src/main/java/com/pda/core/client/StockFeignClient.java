@@ -1,5 +1,6 @@
 package com.pda.core.client;
 
+import com.pda.commons.dto.StockInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,4 +20,7 @@ public interface StockFeignClient {
 
     @GetMapping("/closed-price/{code}")
     ResponseEntity<Long> getClosedPrice(@PathVariable("code") String code);
+
+    @GetMapping("/stock-info/{code}")
+    ResponseEntity<StockInfoDto> getStockInfo(@PathVariable("code") String code);
 }

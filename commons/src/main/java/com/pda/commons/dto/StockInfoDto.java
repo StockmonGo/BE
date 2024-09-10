@@ -1,4 +1,4 @@
-package com.pda.stock.dto;
+package com.pda.commons.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -22,10 +22,11 @@ public class CatchStockmonResponseDto {
     private Long stockPrice;
     private Long stockTotalPrice;
     private String stockMarket;
+    private Boolean isFirst;
 
-    public static CatchStockmonResponseDto fromEntity(Stockmon stockmon, Long stockCurrentPrice, Long stockTotalPrice) {
+    public static CatchStockmonResponseDto fromEntity(Stockmon stockmon, Long stockCurrentPrice, Long stockTotalPrice, boolean isFirst) {
         return new CatchStockmonResponseDto(stockmon.getId(), stockmon.getStock().getCode(), stockmon.getName(), stockmon.getDescription(),
                 stockmon.getStock().getStockType().getId(), stockmon.getStock().getStockType().getName(),
-                stockCurrentPrice,stockTotalPrice, stockmon.getStock().getStockMarket());
+                stockCurrentPrice,stockTotalPrice, stockmon.getStock().getStockMarket(), isFirst);
     }
 }

@@ -26,7 +26,7 @@ public interface TravelerStockmonRepository extends JpaRepository<TravelerStockm
     void addTravelerStockmonByTravelerIdAndStockmonId(@Param("travelerId") Long travelerId, @Param("stockmonId") Long stockmonId);
 
     @Modifying
-    @Query("UPDATE TravelerStockmon ts SET ts.stockmonCount = :stockmonCount WHERE ts.id = :id")
-    void updateStockmonCountById(@Param("id") Long id, @Param("stockmonCount") Long stockmonCount);
+    @Query("UPDATE TravelerStockmon ts SET ts.stockmonCount = :stockmonCount, ts.stockmonAveragePrice = :stockmonAveragePrice WHERE ts.id = :id")
+    void updateStockmonCountById(@Param("id") Long id, @Param("stockmonCount") Long stockmonCount, @Param("stockmonAveragePrice") Double stockmonAveragePrice);
 
 }

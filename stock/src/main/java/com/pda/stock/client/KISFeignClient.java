@@ -1,7 +1,7 @@
 package com.pda.stock.client;
 
 import com.pda.stock.dto.StockChartDto;
-import com.pda.stock.dto.StockInfoDto;
+import com.pda.commons.dto.StockInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
