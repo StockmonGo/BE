@@ -1,5 +1,6 @@
 package com.pda.core.service;
 
+import com.pda.commons.dto.StockInfoDto;
 import com.pda.core.client.StockFeignClient;
 import com.pda.core.dto.*;
 import com.pda.core.entity.*;
@@ -14,6 +15,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -73,30 +75,38 @@ public class TravelerStockmonService {
         try {
             if(!isMainStreet(latitude, longitude)) {
                 list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
+                World world = list.get(worldId);
+                world.setIsCaught(true);
+                list.set(worldId, world);
+                redisRepository.setToListAll(WORLD_REDIS_KEY, list);
             } else {
                 list = (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+                World world = list.get(worldId);
+                world.setIsCaught(true);
+                list.set(worldId, world);
+                redisRepository.setToListAll(MAIN_STREET_REDIS_KEY, list);
             }
-            World world = list.get(worldId);
-            world.setIsCaught(true);
-            list.set(worldId, world);
-            redisRepository.setToListAll(WORLD_REDIS_KEY, list);
         } catch(IndexOutOfBoundsException ignored) {}
 
         travelerRepository.minusStockball(travelerId, usedStockball);
 
-        TravelerStockmon travelerStockmon = travelerStockmonRepository.findTravelerStockmonByTravelerIdAndStockmonId(travelerId, stockmonId).orElse(
-                TravelerStockmon.builder()
-                        .traveler(travelerRepository.getReferenceById(travelerId))
-                        .stockmon(stockmonRepository.getReferenceById(stockmonId))
-                        .stockmonCount(0L)
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
-                        .stockmonAveragePrice(0.0)
-                        .build());
+        AtomicBoolean isFirst = new AtomicBoolean(false);
+        TravelerStockmon travelerStockmon = travelerStockmonRepository.findTravelerStockmonByTravelerIdAndStockmonId(travelerId, stockmonId).orElseGet(() -> {
+            isFirst.set(true); // orElse로 새로운 객체를 생성할 때 isFirst를 true로 설정
+            return TravelerStockmon.builder()
+                    .traveler(travelerRepository.getReferenceById(travelerId))
+                    .stockmon(stockmonRepository.getReferenceById(stockmonId))
+                    .stockmonCount(0L)
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .stockmonAveragePrice(0.0)
+                    .build();
+        });
 
         long count = travelerStockmon.getStockmonCount() + 1;
-        long currentPrice = stockFeignClient.getCurrentPrice(travelerStockmon.getStockmon().getStock().getCode()).getBody();
-        long totalPrice = stockFeignClient.getTotalPrice(travelerStockmon.getStockmon().getStock().getCode()).getBody();
+        StockInfoDto stockInfoDto = stockFeignClient.getStockInfo(travelerStockmon.getStockmon().getStock().getCode()).getBody();
+        long currentPrice = Long.parseLong(stockInfoDto.getOutput().getCurrentPrice());
+        long totalPrice = Long.parseLong(stockInfoDto.getOutput().getTotalPrice());
         travelerStockmon.setStockmonCount(count);
         travelerStockmon.setStockmonAveragePrice(
                 (travelerStockmon.getStockmonAveragePrice() * (count - 1) +
@@ -104,7 +114,7 @@ public class TravelerStockmonService {
 
         travelerStockmonRepository.save(travelerStockmon);
 
-        return CatchStockmonResponseDto.fromEntity(stockmon, currentPrice, totalPrice);
+        return CatchStockmonResponseDto.fromEntity(stockmon, currentPrice, totalPrice, isFirst.get());
     }
 
     private boolean isMainStreet(double latitude, double longitude) {
