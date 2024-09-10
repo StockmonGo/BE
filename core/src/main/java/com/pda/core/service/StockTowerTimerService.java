@@ -47,15 +47,12 @@ public class StockTowerTimerService {
             }
         }
 
-        StockTowerTimerUpdateDto updateDto = StockTowerTimerUpdateDto.builder()
-                .travelerId(travelerId)
-                .stockTowerId(stockTowerId)
-                .updatedAt(now)
-                .build();
+        StockTowerTimer newTimer = new StockTowerTimer();
+        newTimer.setTravelerId(travelerId);
+        newTimer.setStockTowerId(stockTowerId);
+        newTimer.setUpdatedAt(now);
 
-        StockTowerTimer updatedTimer = updateDto.toEntity(latestTimer.orElse(new StockTowerTimer()));
-
-        stockTowerTimerRepository.save(updatedTimer);
+        stockTowerTimerRepository.save(newTimer);
 
         // TODO: 우선 3~6까지 랜덤으로 생성
         long increasedStockBall = random.nextInt(4) + 3;
@@ -75,15 +72,17 @@ public class StockTowerTimerService {
         return new StockTowerTimerResponseDto(actualIncrease);
     }
 
+
     @Transactional
-    public StockTowerTimerDetailResponseDto getStockTowerDetail(Long stockTowerId) {
+    public StockTowerTimerDetailResponseDto getStockTowerDetail(Long travelerId, Long stockTowerId) {
         StockTower stockTower = stockTowerRepository.findById(stockTowerId)
                 .orElseThrow(() -> new NoStockTowerException());
 
         StockTowerTimer stockTowerTimer = stockTowerTimerRepository
-                .findFirstByStockTowerIdOrderByUpdatedAtDesc(stockTowerId)
+                .findFirstByTravelerIdAndStockTowerIdOrderByUpdatedAtDesc(travelerId, stockTowerId)
                 .orElse(null);
+
         return StockTowerTimerDetailResponseDto.fromEntity(stockTowerTimer, stockTower);
     }
-
+    
 }

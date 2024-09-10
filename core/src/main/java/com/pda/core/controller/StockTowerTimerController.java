@@ -33,11 +33,12 @@ public class StockTowerTimerController {
         this.stockTowerTimerService = stockTowerTimerService;
     }
 
+
     @PostMapping
     @Operation(summary = "스톡타워 보상 요청 API")
     @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<StockTowerTimerResponseDto>> useTower( @RequestHeader(TRAVELER_ID) Long travelerId,
-            @Valid @RequestBody StockTowerTimerRequestDto request) {
+                                                                                 @Valid @RequestBody StockTowerTimerRequestDto request) {
         try {
             StockTowerTimerResponseDto response = stockTowerTimerService.useTower(travelerId,
                     request.getStockTowerId());
@@ -59,8 +60,10 @@ public class StockTowerTimerController {
     @GetMapping("/{id}")
     @Operation(summary = "스톡타워 상세 조회 API")
     @SecurityRequirement(name = JWT)
-    public ResponseEntity<SuccessResponse<StockTowerTimerDetailResponseDto>> getStockTowerDetail(@PathVariable("id") Long id) {
-        StockTowerTimerDetailResponseDto detail = stockTowerTimerService.getStockTowerDetail(id);
+    public ResponseEntity<SuccessResponse<StockTowerTimerDetailResponseDto>> getStockTowerDetail(
+            @RequestHeader(TRAVELER_ID) Long travelerId,
+            @PathVariable("id") Long id) {
+        StockTowerTimerDetailResponseDto detail = stockTowerTimerService.getStockTowerDetail(travelerId, id);
         return ResponseEntity.ok(SuccessResponse.<StockTowerTimerDetailResponseDto>builder()
                 .data(detail)
                 .message("성공")
@@ -68,6 +71,5 @@ public class StockTowerTimerController {
                 .build()
         );
     }
-
 }
 
