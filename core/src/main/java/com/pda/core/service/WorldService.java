@@ -39,10 +39,13 @@ public class WorldService {
 
 
     public List<World> getNearWorlds(GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
-        List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
 
         BigDecimal latitude = getWorldStockmonsRequestDto.getLatitude();
         BigDecimal longitude = getWorldStockmonsRequestDto.getLongitude();
+
+        if(isMainStreet(latitude.doubleValue(), longitude.doubleValue())) return (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+
+        List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
 
         BigDecimal stockmonLatitudeDiff = BigDecimal.valueOf(STOCKMON_LATITUDE_DIFF);
         BigDecimal stockmonLongitudeDiff = BigDecimal.valueOf(STOCKMON_LONGITUDE_DIFF);
@@ -66,7 +69,6 @@ public class WorldService {
 
         for (int i = 0; i < dIndex.length; i++) {
             int idx = index + dIndex[i];
-
             if(validIndex(idx, list)) newList.add(list.get(idx));
         }
 
@@ -79,9 +81,10 @@ public class WorldService {
                     .subtract(streetLongitudeMin)
                     .divide(stockmonLongitudeDiff, RoundingMode.HALF_UP)
                     .intValue();
+
             for(int i = 0; i < mIndex.length; i++) {
-                int streetIndex = streetLat * MAX_STREET_LNG + streetLong + mIndex[i];
-                if (validIndex(streetIndex, list)) newList.add(list.get(GENERAL_MAX + streetIndex));
+                int streetIndex = GENERAL_MAX + streetLat * MAX_STREET_LNG + streetLong + mIndex[i];
+                if (validIndex(streetIndex, list)) newList.add(list.get(streetIndex));
             }
         }
 
@@ -89,7 +92,7 @@ public class WorldService {
     }
 
     private boolean validIndex(int index, List<World> list) {
-        if(index > list.size() || index < 0) return false;
+        if(index >= list.size() || index < 0) return false;
 
         return !list.get(index).getIsCaught();
     }
@@ -100,7 +103,6 @@ public class WorldService {
         List<Object> list = new ArrayList<>();
         List<World> tmpList = new ArrayList<>();
         long count = 0;
-        System.out.println("test");
         double latitude = Double.parseDouble(MIN_LATITUDE_STRING);
         double nextLatitude = Double.parseDouble(MIN_LATITUDE_STRING) + STOCKMON_LATITUDE_DIFF;
         int tmp = 0;
@@ -124,6 +126,33 @@ public class WorldService {
         }
         list.addAll(tmpList);
         redisRepository.setToListAll(WORLD_REDIS_KEY, list);
+    }
+
+    @Scheduled(cron = "0 * * * * *")
+    @Transactional
+    public void setMainStreetWorld() throws JsonProcessingException {
+
+        System.out.println("test");
+        List<Object> list = new ArrayList<>();
+        List<World> tmpList = new ArrayList<>();
+        long count = 0;
+        double latitude = MAIN_STREET_MIN_LATITUDE;
+        double nextLatitude = MAIN_STREET_MIN_LATITUDE + STOCKMON_LATITUDE_DIFF;
+
+        for(int i = 1; nextLatitude <= MAIN_STREET_MAX_LATITUDE; i++) {
+            double longitude = MAIN_STREET_MIN_LONGITUDE;
+            double nextLongitude = MAIN_STREET_MIN_LONGITUDE + STOCKMON_LONGITUDE_DIFF;
+            for(int j = 1; nextLongitude <= MAIN_STREET_MAX_LONGITUDE; j++ ) {
+                list.add(getNewWorld(count++, latitude, longitude, nextLatitude, nextLongitude));
+                list.add(getNewWorld(count++, latitude, longitude, nextLatitude, nextLongitude));
+                longitude = nextLongitude;
+                nextLongitude = MAIN_STREET_MIN_LONGITUDE + (j + 1) * STOCKMON_LONGITUDE_DIFF;
+            }
+            latitude = nextLatitude;
+            nextLatitude = MAIN_STREET_MIN_LATITUDE + (i + 1) * STOCKMON_LATITUDE_DIFF;
+        }
+        list.addAll(tmpList);
+        redisRepository.setToListAll(MAIN_STREET_REDIS_KEY, list);
     }
 
     private World getNewWorld(long count, double latitude, double longitude, double nextLatitude, double nextLongitude) {
@@ -189,7 +218,48 @@ public class WorldService {
             redisRepository.setToListAll(WORLD_REDIS_KEY, list);
         }
 
+    }
 
+    @Scheduled(cron = "0 * * * * *")
+    @Transactional
+    public void reMainStreetGenerate() throws JsonProcessingException {
+        List<World> list = (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+        boolean isChanged = false;
+        double latitude = MAIN_STREET_MIN_LATITUDE;
+        double nextLatitude = MAIN_STREET_MIN_LATITUDE + STOCKMON_LATITUDE_DIFF;
+
+        int count = 0;
+        for(int i = 1; nextLatitude <= MAIN_STREET_MAX_LATITUDE; i++) {
+            double longitude = MAIN_STREET_MIN_LONGITUDE;
+            double nextLongitude = MAIN_STREET_MIN_LONGITUDE+ STOCKMON_LONGITUDE_DIFF;
+            for(int j = 1; nextLongitude <= MAIN_STREET_MAX_LONGITUDE; j++) {
+
+                World world = list.get(count);
+                World world2 = list.get(count+1);
+
+                if(world.getIsCaught()) {
+                    isChanged = true;
+                    list.set(count, getReWorld(world, latitude, longitude, nextLatitude, nextLongitude));
+                }
+
+                if(world2.getIsCaught()) {
+                    isChanged = true;
+                    list.set(count + 1, getReWorld(world, latitude, longitude, nextLatitude, nextLongitude));
+                }
+
+
+                longitude = nextLongitude;
+                nextLongitude = MAIN_STREET_MIN_LONGITUDE+ (j + 1) * STOCKMON_LONGITUDE_DIFF;
+                count+=2;
+            }
+            latitude = nextLatitude;
+            nextLatitude = MAIN_STREET_MIN_LATITUDE+ (i + 1) * STOCKMON_LATITUDE_DIFF;
+
+        }
+
+        if(isChanged) {
+            redisRepository.setToListAll(MAIN_STREET_REDIS_KEY, list);
+        }
 
     }
 

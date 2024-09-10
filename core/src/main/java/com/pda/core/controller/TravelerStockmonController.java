@@ -109,7 +109,7 @@ public class TravelerStockmonController {
 
     @GetMapping("/stockmons/yard")
     @Operation(summary = "스톡몬 마당 조회 API")
-    @SecurityRequirement(name = "JWT")
+    @SecurityRequirement(name = JWT)
     public ResponseEntity<SuccessResponse<YardStockmonResponseDto>> getYardStockmons(
             @RequestHeader(TRAVELER_ID) Long travelerId) {
 

@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.pda.core.config.SwaggerConfig.JWT;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "지도 관련 API 모음")
@@ -40,6 +38,7 @@ public class WorldController {
     @PostMapping("/stockmons")
     @Operation(summary = "주변 스톡몬, 스톡타워 조회 API")
     public ResponseEntity<SuccessResponse<GetWorldStockmonsResponseDto>> getMapStockmons(@Valid @RequestBody GetWorldStockmonsRequestDto getWorldStockmonsRequestDto) {
+
         List<World> worlds = worldService.getNearWorlds(getWorldStockmonsRequestDto);
         List<StockTower> stockTowers = stockTowerService.getNearStockTowers(getWorldStockmonsRequestDto);
         List<WorldStockmonDto> worldStockmonDtos = new ArrayList<>();

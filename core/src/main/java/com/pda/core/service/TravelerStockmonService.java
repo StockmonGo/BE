@@ -18,7 +18,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.pda.core.utils.WorldConstant.WORLD_REDIS_KEY;
+import static com.pda.core.utils.WorldConstant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +50,7 @@ public class TravelerStockmonService {
     public void decreaseStockball(Long travelerId, DecreaseCountRequestDto decreaseCountRequestDto) {
 
         Traveler traveler = travelerRepository.findById(travelerId).orElseThrow(NoTravelerException::new);
-        long usedStockball = decreaseCountRequestDto.getUsedStockball();
+        long usedStockball = decreaseCountRequestDto.getUsedStockballs();
 
         if(traveler.getStockballCount() < usedStockball) throw new InvalidStockballCountException();
         travelerRepository.minusStockball(travelerId, usedStockball);
@@ -62,17 +62,25 @@ public class TravelerStockmonService {
         int worldId = catchStockmonRequestDto.getWorldId();
         long stockmonId = catchStockmonRequestDto.getStockmonId();
         long usedStockball = catchStockmonRequestDto.getUsedStockballs();
+        double latitude = catchStockmonRequestDto.getLatitude();
+        double longitude = catchStockmonRequestDto.getLongitude();
+
         Stockmon stockmon = stockmonRepository.findById(stockmonId).orElseThrow(NoStockmonDetailException::new);
         Traveler traveler = travelerRepository.findById(travelerId).orElseThrow(NoTravelerException::new);
 
         if(traveler.getStockballCount() < usedStockball) throw new InvalidStockballCountException();
-
-        List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
-        World world = list.get(worldId);
-        world.setIsCaught(true);
-        list.set(worldId, world);
-        redisRepository.setToListAll(WORLD_REDIS_KEY, list);
-
+        List<World> list;
+        try {
+            if(!isMainStreet(latitude, longitude)) {
+                list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
+            } else {
+                list = (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+            }
+            World world = list.get(worldId);
+            world.setIsCaught(true);
+            list.set(worldId, world);
+            redisRepository.setToListAll(WORLD_REDIS_KEY, list);
+        } catch(IndexOutOfBoundsException ignored) {}
 
         travelerRepository.minusStockball(travelerId, usedStockball);
 
@@ -92,11 +100,18 @@ public class TravelerStockmonService {
         travelerStockmon.setStockmonCount(count);
         travelerStockmon.setStockmonAveragePrice(
                 (travelerStockmon.getStockmonAveragePrice() * (count - 1) +
-                        Double.parseDouble(String.valueOf(currentPrice)) /count));
+                        Double.parseDouble(String.valueOf(currentPrice))) /count);
 
         travelerStockmonRepository.save(travelerStockmon);
 
         return CatchStockmonResponseDto.fromEntity(stockmon, currentPrice, totalPrice);
+    }
+
+    private boolean isMainStreet(double latitude, double longitude) {
+        return (latitude > MAIN_STREET_MIN_LATITUDE)
+                && latitude < MAIN_STREET_MAX_LATITUDE
+                && longitude > MAIN_STREET_MIN_LONGITUDE
+                && longitude < MAIN_STREET_MAX_LONGITUDE;
     }
 
 }

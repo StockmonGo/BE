@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DecreaseCountRequestDto {
 
-    private Long usedStockball;
+    private Long usedStockballs;
 }

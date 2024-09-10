@@ -4,7 +4,9 @@ import com.pda.core.entity.TravelerStockmon;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,7 +20,13 @@ public interface TravelerStockmonRepository extends JpaRepository<TravelerStockm
                                                              @Param("stockmonId") Long stockmonId);
     Optional<TravelerStockmon> findTravelerStockmonByTravelerIdAndStockmonId(Long travelerId, Long stockmonId);
 
+
     @Query("UPDATE TravelerStockmon ts SET ts.stockmonCount = ts.stockmonCount + 1 WHERE ts.traveler.id = :travelerId and ts.stockmon.id = :stockmonId")
+    @Modifying
     void addTravelerStockmonByTravelerIdAndStockmonId(@Param("travelerId") Long travelerId, @Param("stockmonId") Long stockmonId);
+
+    @Modifying
+    @Query("UPDATE TravelerStockmon ts SET ts.stockmonCount = :stockmonCount WHERE ts.id = :id")
+    void updateStockmonCountById(@Param("id") Long id, @Param("stockmonCount") Long stockmonCount);
 
 }

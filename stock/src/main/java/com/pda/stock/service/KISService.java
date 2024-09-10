@@ -4,8 +4,10 @@ package com.pda.stock.service;
 import com.pda.stock.client.KISFeignClient;
 import com.pda.stock.dto.StockChartDto;
 import com.pda.stock.dto.StockChartResponseDto;
+import com.pda.stock.dto.StockInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,14 +30,31 @@ public class KISService {
 
     private final static long MILLION = 1_000_000;
 
+    @Cacheable(value = "TotalPrice", key = "#code", cacheManager = "redisCacheManager")
     public long getStockTotalPrice(String code) {
-        return Long.parseLong(kisFeignClient.getStockInfo(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET).getOutput().getTotalPrice()) * MILLION;
+        StockInfoDto stockInfo = kisFeignClient.getStockInfo(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
+        getCacheCurrentPrice(code, stockInfo.getOutput().getCurrentPrice());
+        return Long.parseLong(stockInfo.getOutput().getTotalPrice()) * MILLION;
     }
 
+    @Cacheable(value = "CurrentPrice", key = "#code", cacheManager = "redisCacheManager")
     public long getStockCurrentPrice(String code) {
-        return Long.parseLong(kisFeignClient.getStockInfo(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET).getOutput().getCurrentPrice());
+        StockInfoDto stockInfo = kisFeignClient.getStockInfo(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
+        getCacheTotalPrice(code, stockInfo.getOutput().getTotalPrice());
+        return Long.parseLong(stockInfo.getOutput().getCurrentPrice());
     }
 
+    @Cacheable(value = "CurrentPrice", key = "#code", cacheManager = "redisCacheManager")
+    public long getCacheCurrentPrice(String code, String currentPrice) {
+        return Long.parseLong(currentPrice);
+    }
+
+    @Cacheable(value = "TotalPrice", key = "#code", cacheManager = "redisCacheManager")
+    public long getCacheTotalPrice(String code, String totalPrice) {
+        return Long.parseLong(totalPrice);
+    }
+
+    @Cacheable(value = "StockChart", key = "#code", cacheManager = "redisCacheManager")
     public List<StockChartResponseDto> getStockChart(String code) {
         StockChartDto stockChartDto = kisFeignClient.getMonthChart(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
         List<StockChartResponseDto> stockChartResponseDtos = new ArrayList<>();
@@ -52,7 +71,8 @@ public class KISService {
         return stockChartResponseDtos;
     }
 
-    public long getStockClosedPrice(String code){
+    @Cacheable(value = "ClosedChart", key = "#code", cacheManager = "redisCacheManager")
+    public long getStockClosedPrice(String code) {
         return Long.parseLong(kisFeignClient.getMonthChart(code,"Bearer "+TOKEN, APP_KEY, APP_SECRET).getOutput()[0].getValue());
     }
 
