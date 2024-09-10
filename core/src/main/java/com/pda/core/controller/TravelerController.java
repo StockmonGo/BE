@@ -7,6 +7,7 @@ import com.pda.core.entity.Account;
 import com.pda.core.entity.Traveler;
 import com.pda.core.exception.NoTravelerException;
 import com.pda.core.service.CustomUserDetailService;
+import com.pda.core.service.StockService;
 import com.pda.core.service.TravelerService;
 import java.util.Date;
 
@@ -28,6 +29,7 @@ import static com.pda.core.config.SwaggerConfig.TRAVELER_ID;
 public class TravelerController {
     private final TravelerService travelerService;
     private final CustomUserDetailService customUserDetailService;
+    private final StockService stockService;
 
 
     @Operation(summary = "모험가 닉네임 검색 API")
@@ -107,6 +109,22 @@ public class TravelerController {
                 .build();
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/stock")
+    @Operation(summary = "모험가 보유 주식 조회 API")
+    @SecurityRequirement(name = JWT)
+    public ResponseEntity<SuccessResponse<GetTravelerStockListResponseDto>> getTravelerStocks(@RequestHeader(TRAVELER_ID) Long travelerId) {
+
+        GetTravelerStockListResponseDto stockListDto = stockService.getTravelerStocks(travelerId);
+
+        SuccessResponse<GetTravelerStockListResponseDto> response = SuccessResponse.<GetTravelerStockListResponseDto>builder()
+                .data(stockListDto)
+                .message("모험가 보유 주식 조회 성공")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 }
