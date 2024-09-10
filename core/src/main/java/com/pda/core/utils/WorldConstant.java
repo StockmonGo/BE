@@ -3,6 +3,7 @@ package com.pda.core.utils;
 public class WorldConstant {
 
     public static final String WORLD_REDIS_KEY = "world";
+    public static final String MAIN_STREET_REDIS_KEY = "mainStreet";
     public static final String MIN_LATITUDE_STRING = "37.42928001105901";
     public static final String MAX_LATITUDE_STRING = "37.73892900008836";
     public static final String MIN_LONGITUDE_STRING = "126.76605328501563";
