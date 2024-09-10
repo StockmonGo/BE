@@ -4,7 +4,7 @@ package com.pda.stock.service;
 import com.pda.stock.client.KISFeignClient;
 import com.pda.stock.dto.StockChartDto;
 import com.pda.stock.dto.StockChartResponseDto;
-import com.pda.stock.dto.StockInfoDto;
+import com.pda.commons.dto.StockInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,6 +29,11 @@ public class KISService {
     private final KISFeignClient kisFeignClient;
 
     private final static long MILLION = 1_000_000;
+
+    @Cacheable(value = "StockInfo", key = "#code", cacheManager = "redisCacheManager")
+    public StockInfoDto getStockInfo(String code) {
+        return kisFeignClient.getStockInfo(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
+    }
 
     @Cacheable(value = "TotalPrice", key = "#code", cacheManager = "redisCacheManager")
     public long getStockTotalPrice(String code) {

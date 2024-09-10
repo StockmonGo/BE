@@ -3,6 +3,7 @@ package com.pda.stock.controller;
 
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.stock.dto.StockChartResponseDto;
+import com.pda.commons.dto.StockInfoDto;
 import com.pda.stock.service.KISService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,11 @@ public class KISController {
 
     private final KISService kisService;
 
+    @GetMapping("/stock-info/{code}")
+    public ResponseEntity<StockInfoDto> getStockInfo(@PathVariable("code") String code) {
+        return ResponseEntity.ok().body(kisService.getStockInfo(code));
+    }
+
     @GetMapping("/total-price/{code}")
     public ResponseEntity<Long> getStockTotalPrice(@PathVariable("code") String code) {
         return ResponseEntity.ok().body(kisService.getStockTotalPrice(code));
@@ -30,7 +36,6 @@ public class KISController {
     public ResponseEntity<Long> getStockCurrentPrice(@PathVariable("code") String code){
         return ResponseEntity.ok().body(kisService.getStockCurrentPrice(code));
     }
-
 
     @GetMapping("/chart/{code}")
     public ResponseEntity<SuccessResponse<List<StockChartResponseDto>>> getStockChart(@PathVariable("code") String code) {
