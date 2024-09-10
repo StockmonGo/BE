@@ -128,13 +128,11 @@ public class WorldService {
         redisRepository.setToListAll(WORLD_REDIS_KEY, list);
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void setMainStreetWorld() throws JsonProcessingException {
 
-        System.out.println("test");
         List<Object> list = new ArrayList<>();
-        List<World> tmpList = new ArrayList<>();
         long count = 0;
         double latitude = MAIN_STREET_MIN_LATITUDE;
         double nextLatitude = MAIN_STREET_MIN_LATITUDE + STOCKMON_LATITUDE_DIFF;
@@ -151,7 +149,6 @@ public class WorldService {
             latitude = nextLatitude;
             nextLatitude = MAIN_STREET_MIN_LATITUDE + (i + 1) * STOCKMON_LATITUDE_DIFF;
         }
-        list.addAll(tmpList);
         redisRepository.setToListAll(MAIN_STREET_REDIS_KEY, list);
     }
 
@@ -246,7 +243,6 @@ public class WorldService {
                     isChanged = true;
                     list.set(count + 1, getReWorld(world, latitude, longitude, nextLatitude, nextLongitude));
                 }
-
 
                 longitude = nextLongitude;
                 nextLongitude = MAIN_STREET_MIN_LONGITUDE+ (j + 1) * STOCKMON_LONGITUDE_DIFF;
