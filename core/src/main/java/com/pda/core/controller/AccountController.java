@@ -2,8 +2,8 @@ package com.pda.core.controller;
 
 import com.pda.commons.dto.SuccessResponse;
 import com.pda.core.dto.AccountCheckResponseDto;
+import com.pda.core.dto.AccountStockResponseDto;
 import com.pda.core.dto.ChangeRealStockRequestDto;
-import com.pda.core.entity.Account;
 import com.pda.core.service.AccountService;
 import java.util.Date;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,16 +30,13 @@ public class AccountController {
     @Operation(summary = "계좌 개설 API")
     @SecurityRequirement(name = JWT)
     @PostMapping("/users/account")
-    public ResponseEntity<SuccessResponse<Void>> createAccount(@RequestHeader(TRAVELER_ID) Long travelerId) {
-        Account createdAccount = accountService.createAccount(travelerId);
+    public ResponseEntity<SuccessResponse<AccountStockResponseDto>> createAccount(@RequestHeader(TRAVELER_ID) Long travelerId) {
 
-        SuccessResponse<Void> response = SuccessResponse.<Void>builder()
-                .data(null)
+        return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.<AccountStockResponseDto>builder()
+                .data(accountService.createAccount(travelerId))
                 .message("계좌 개설 성공")
                 .timestamp(new Date())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                .build());
     }
 
     @Operation(summary = "계좌 개설 여부 API")

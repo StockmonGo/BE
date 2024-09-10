@@ -4,10 +4,12 @@ package com.pda.core.service;
 import com.pda.core.client.StockFeignClient;
 import com.pda.core.dto.AccountCheckResponseDto;
 import com.pda.core.dto.AccountDto;
+import com.pda.core.dto.AccountStockResponseDto;
 import com.pda.core.dto.HasAccountResponseDto;
 import com.pda.core.entity.*;
 import com.pda.core.exception.*;
 import com.pda.core.repository.*;
+import com.pda.core.utils.RandomUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class AccountService {
 
 
     @Transactional
-    public Account createAccount(Long travelerId) {
+    public AccountStockResponseDto createAccount(Long travelerId) {
         Traveler traveler = travelerRepository.findById(travelerId)
                 .orElseThrow(NoTravelerException::new);
 
@@ -36,23 +38,26 @@ public class AccountService {
             throw new HasAccountException();
         }
 
-        String accountNumber;
-        do {
-            accountNumber = generateAccountNumber();
-        } while (!accountRepository.existsByAccountNumber(accountNumber));
+        String accountNumber = generateAccountNumber();
 
         AccountDto accountDto = AccountDto.builder()
-                .accountNumber(generateAccountNumber())
+                .accountNumber(accountNumber)
                 .build();
 
         Account account = accountDto.toEntity();
         Account savedAccount = accountRepository.save(account);
-
         traveler.setAccount(savedAccount);
+
+        Stock stock = stockRepository.findById(RandomUtil.createRandomInt(1,59)).orElseThrow(NoStockException::new);
+
+        accountStockRepository.save(AccountStock.builder()
+                .account(savedAccount)
+                .stock(stock)
+                .stockCount(1.0)
+                .build());
         travelerRepository.save(traveler);
 
-
-        return savedAccount;
+        return new AccountStockResponseDto(stock.getId(), stock.getName(), stock.getCode());
     }
 
     private String generateAccountNumber() {
@@ -97,11 +102,16 @@ public class AccountService {
         Account account = accountRepository.findByTravelerId(travelerId).orElseThrow(NoAccountException::new);
         TravelerStockmon travelerStockmon = travelerStockmonRepository.findByTravelerIdAndStockmonId(travelerId, stock.getId()).orElseThrow(NotEnoughStockmonException::new);
 
-        if(travelerStockmon.getStockmonCount() < 20) {
+        long stockmonCount = travelerStockmon.getStockmonCount();
+        if(stockmonCount < 20) {
             throw new NotEnoughStockmonException();
         }
 
-        travelerStockmonRepository.updateStockmonCountById(travelerStockmon.getId(), travelerStockmon.getStockmonCount() - 20);
+        if(stockmonCount == 20) {
+            travelerStockmon.setStockmonAveragePrice(0.0);
+        }
+
+        travelerStockmonRepository.updateStockmonCountById(travelerStockmon.getId(), stockmonCount - 20, travelerStockmon.getStockmonAveragePrice());
 
         if (accountStockRepository.existsAccountStockByAccountIdAndStockId(account.getId(), stock.getId())) {
             accountStockRepository.updateStock(account.getId(), stock.getId(), stockCount);
