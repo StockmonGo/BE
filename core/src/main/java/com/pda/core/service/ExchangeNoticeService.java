@@ -43,11 +43,14 @@ public class ExchangeNoticeService {
     }
 
     @Transactional
-    public ExchangeNotice createExchangeNotice(StockmonExchangeNoticeRequestDto requestDto, Long loggedInUserId) {
+    public void createExchangeNotice(StockmonExchangeNoticeRequestDto requestDto, Long loggedInUserId) {
+        TravelerStockmon travelerStockmon = travelerStockmonRepository
+                .findByTravelerIdAndStockmonId(loggedInUserId,
+                        requestDto.getTravelerStockmonId()).orElseThrow(NoStockmonException::new);
 
-        updateStockmonCount(loggedInUserId, requestDto.getTravelerStockmonId(), -1L);
-        ExchangeNotice exchangeNotice = requestDto.toEntity(loggedInUserId);
-        return exchangeNoticeRepository.save(exchangeNotice);
+        updateStockmonCount(travelerStockmon, -1L);
+        ExchangeNotice exchangeNotice = requestDto.toEntity(loggedInUserId, travelerStockmon.getStockmonAveragePrice());
+        exchangeNoticeRepository.save(exchangeNotice);
     }
 
     public GetStockmonExchangeListResponseDto getExchangeNotices(Long loggedInUserId) {
@@ -63,32 +66,67 @@ public class ExchangeNoticeService {
         ExchangeNotice notice = exchangeNoticeRepository.findByIdAndReceiverId(requestDto.getNoticeId(), loggedInUserId)
                 .orElseThrow(NoTravelerException::new);
 
-        updateStockmonCount(loggedInUserId, requestDto.getTravelerStockmonId(), -1L);
+        TravelerStockmon travelerStockmon = travelerStockmonRepository
+                .findByTravelerIdAndStockmonId(loggedInUserId,
+                        requestDto.getTravelerStockmonId()).orElseThrow(NoStockmonException::new);
+        double receiverAveragePrice = travelerStockmon.getStockmonAveragePrice();
+        updateStockmonCount(travelerStockmon, -1L);
+        upStockmonCount(notice.getSender().getId(), loggedInUserId, requestDto.getTravelerStockmonId(), notice.getSenderStockmon().getId(), notice.getStockAveragePrice(), receiverAveragePrice);
 
-        updateStockmonCount(loggedInUserId, notice.getSenderStockmon().getId(), 1L);
-
-        updateStockmonCount(notice.getSender().getId(), requestDto.getTravelerStockmonId(), 1L);
 
         exchangeNoticeRepository.delete(notice);
 
         return new AcceptStockmonExchangeResponseDto(true);
     }
 
+    private void upStockmonCount(Long senderId, Long receiverId, Long senderReceiveStockmonId, Long recevierReceiveStockmonId, Double averagePrice, Double receiverAveragePrice) {
+        TravelerStockmon senderReceiveTravelerStockmon = travelerStockmonRepository
+                .findByTravelerIdAndStockmonId(senderId, senderReceiveStockmonId).orElseGet(() -> getNewTravelerStockmon(
+                        travelerRepository.getReferenceById(senderId),
+                        stockmonRepository.getReferenceById(senderReceiveStockmonId)
+                ));
+        TravelerStockmon receiverReceiveTravelerStockmon = travelerStockmonRepository
+                .findByTravelerIdAndStockmonId(receiverId, recevierReceiveStockmonId).orElseGet(() -> getNewTravelerStockmon(
+                        travelerRepository.getReferenceById(receiverId),
+                        stockmonRepository.getReferenceById(recevierReceiveStockmonId)
+                ));
+        long senderCount = senderReceiveTravelerStockmon.getStockmonCount() + 1;
+        long receiverCount = receiverReceiveTravelerStockmon.getStockmonCount() + 1;
+
+        senderReceiveTravelerStockmon.setStockmonCount(senderCount);
+        senderReceiveTravelerStockmon.setStockmonAveragePrice(
+                (senderReceiveTravelerStockmon.getStockmonAveragePrice() * (senderCount - 1) +
+                        receiverAveragePrice) / senderCount
+        );
+
+        receiverReceiveTravelerStockmon.setStockmonCount(receiverCount);
+        receiverReceiveTravelerStockmon.setStockmonAveragePrice(
+                (receiverAveragePrice * (receiverCount - 1) +
+                averagePrice) / receiverCount
+        );
+
+        travelerStockmonRepository.save(senderReceiveTravelerStockmon);
+        travelerStockmonRepository.save(receiverReceiveTravelerStockmon);
+
+    }
+
+    protected void updateStockmonCount(TravelerStockmon travelerStockmon, Long delta) {
+        long newCount = travelerStockmon.getStockmonCount() + delta;
+        if (newCount > 0) {
+            travelerStockmon.setStockmonCount(newCount);
+            travelerStockmon.setUpdatedAt(LocalDateTime.now());
+            travelerStockmonRepository.save(travelerStockmon);
+        } else {
+            travelerStockmonRepository.delete(travelerStockmon);
+        }
+    }
     @Transactional
-    private void updateStockmonCount(Long travelerId, Long stockmonId, Long delta) {
+    protected void updateStockmonCount(Long travelerId, Long stockmonId, Long delta) {
         Optional<TravelerStockmon> optionalTravelerStockmon = travelerStockmonRepository
                 .findByTravelerIdAndStockmonId(travelerId, stockmonId);
 
         if (optionalTravelerStockmon.isPresent()) {
-            TravelerStockmon travelerStockmon = optionalTravelerStockmon.get();
-            Long newCount = travelerStockmon.getStockmonCount() + delta;
-            if (newCount > 0) {
-                travelerStockmon.setStockmonCount(newCount);
-                travelerStockmon.setUpdatedAt(LocalDateTime.now());
-                travelerStockmonRepository.save(travelerStockmon);
-            } else {
-                travelerStockmonRepository.delete(travelerStockmon);
-            }
+            updateStockmonCount(optionalTravelerStockmon.get(), delta);
         } else if (delta > 0) {
             Traveler traveler = travelerRepository.findById(travelerId)
                     .orElseThrow(NoTravelerException::new);
@@ -107,6 +145,17 @@ public class ExchangeNoticeService {
         } else {
             throw new InvalidExchangeRequestException();
         }
+
+    }
+
+    private TravelerStockmon getNewTravelerStockmon(Traveler traveler, Stockmon stockmon) {
+        return TravelerStockmon.builder()
+                .traveler(traveler)
+                .stockmon(stockmon)
+                .stockmonCount(0L)
+                .stockmonAveragePrice(0.0)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now()).build();
     }
 
     @Transactional
