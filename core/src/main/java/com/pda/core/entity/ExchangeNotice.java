@@ -35,6 +35,8 @@ public class ExchangeNotice {
     @JoinColumn(name = "sender_stockmon_id")
     private Stockmon senderStockmon;
 
+    private Double stockAveragePrice;
+
     private LocalDateTime createdAt;
 
 }
