@@ -28,7 +28,7 @@ public class KISService {
 
     private final KISFeignClient kisFeignClient;
 
-    private final static long MILLION = 1_000_000;
+    private final static long MILLION = 1_000_000_00;
 
     @Cacheable(value = "StockInfo", key = "#code", cacheManager = "redisCacheManager")
     public StockInfoDto getStockInfo(String code) {
@@ -56,11 +56,12 @@ public class KISService {
 
     @Cacheable(value = "TotalPrice", key = "#code", cacheManager = "redisCacheManager")
     public long getCacheTotalPrice(String code, String totalPrice) {
-        return Long.parseLong(totalPrice);
+        return Long.parseLong(totalPrice)  * MILLION;
     }
 
     @Cacheable(value = "StockChart", key = "#code", cacheManager = "redisCacheManager")
     public List<StockChartResponseDto> getStockChart(String code) {
+
         StockChartDto stockChartDto = kisFeignClient.getMonthChart(code, "Bearer " + TOKEN, APP_KEY, APP_SECRET);
         List<StockChartResponseDto> stockChartResponseDtos = new ArrayList<>();
         for(int i = 5; i >= 0; i--) {
@@ -78,6 +79,7 @@ public class KISService {
 
     @Cacheable(value = "ClosedChart", key = "#code", cacheManager = "redisCacheManager")
     public long getStockClosedPrice(String code) {
+
         return Long.parseLong(kisFeignClient.getMonthChart(code,"Bearer "+TOKEN, APP_KEY, APP_SECRET).getOutput()[0].getValue());
     }
 

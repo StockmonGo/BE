@@ -17,11 +17,12 @@ public class StockmonExchangeNoticeRequestDto {
     private Long travelerStockmonId;
     private Long receiverId;
 
-    public ExchangeNotice toEntity(Long senderId) {
+    public ExchangeNotice toEntity(Long senderId, double averagePrice) {
         return ExchangeNotice.builder()
                 .sender(new Traveler(senderId))
                 .receiver(new Traveler(receiverId))
                 .senderStockmon(new Stockmon(travelerStockmonId))
+                .stockAveragePrice(averagePrice)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

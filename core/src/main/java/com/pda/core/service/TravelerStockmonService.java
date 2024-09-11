@@ -103,14 +103,14 @@ public class TravelerStockmonService {
                     .build();
         });
 
-        long count = travelerStockmon.getStockmonCount() + 1;
+        long count = travelerStockmon.getStockmonCount() + 10;
         StockInfoDto stockInfoDto = stockFeignClient.getStockInfo(travelerStockmon.getStockmon().getStock().getCode()).getBody();
         long currentPrice = Long.parseLong(stockInfoDto.getOutput().getCurrentPrice());
-        long totalPrice = Long.parseLong(stockInfoDto.getOutput().getTotalPrice());
+        long totalPrice = Long.parseLong(stockInfoDto.getOutput().getTotalPrice()) * 1_000_000_00;
         travelerStockmon.setStockmonCount(count);
         travelerStockmon.setStockmonAveragePrice(
-                (travelerStockmon.getStockmonAveragePrice() * (count - 1) +
-                        Double.parseDouble(String.valueOf(currentPrice))) /count);
+                (travelerStockmon.getStockmonAveragePrice() * (count - 10) +
+                        Double.parseDouble(String.valueOf(currentPrice)) * 10) / count);
 
         travelerStockmonRepository.save(travelerStockmon);
 

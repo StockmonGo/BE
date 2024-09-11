@@ -43,7 +43,19 @@ public class WorldService {
         BigDecimal latitude = getWorldStockmonsRequestDto.getLatitude();
         BigDecimal longitude = getWorldStockmonsRequestDto.getLongitude();
 
-        if(isMainStreet(latitude.doubleValue(), longitude.doubleValue())) return (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+        if(isMainStreet(latitude.doubleValue(), longitude.doubleValue())) {
+            List<World> list = (List<World>) redisRepository.getList(MAIN_STREET_REDIS_KEY).get(0);
+            List<World> newList = new ArrayList<>();
+
+            for(int i = 0; i < list.size(); i++) {
+                World world = list.get(i);
+                if(validIndex(i, list)) {
+                    newList.add(world);
+                }
+            }
+
+            return newList;
+        }
 
         List<World> list = (List<World>) redisRepository.getList(WORLD_REDIS_KEY).get(0);
 
@@ -140,7 +152,7 @@ public class WorldService {
         for(int i = 1; nextLatitude <= MAIN_STREET_MAX_LATITUDE; i++) {
             double longitude = MAIN_STREET_MIN_LONGITUDE;
             double nextLongitude = MAIN_STREET_MIN_LONGITUDE + STOCKMON_LONGITUDE_DIFF;
-            for(int j = 1; nextLongitude <= MAIN_STREET_MAX_LONGITUDE; j++ ) {
+            for(int j = 1; nextLongitude <= MAIN_STREET_MAX_LONGITUDE; j++) {
                 list.add(getNewWorld(count++, latitude, longitude, nextLatitude, nextLongitude));
                 list.add(getNewWorld(count++, latitude, longitude, nextLatitude, nextLongitude));
                 longitude = nextLongitude;
@@ -241,7 +253,7 @@ public class WorldService {
 
                 if(world2.getIsCaught()) {
                     isChanged = true;
-                    list.set(count + 1, getReWorld(world, latitude, longitude, nextLatitude, nextLongitude));
+                    list.set(count + 1, getReWorld(world2, latitude, longitude, nextLatitude, nextLongitude));
                 }
 
                 longitude = nextLongitude;

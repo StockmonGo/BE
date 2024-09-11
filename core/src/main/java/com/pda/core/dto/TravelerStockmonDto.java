@@ -23,7 +23,7 @@ public class TravelerStockmonDto {
         Stock stock = stockmon.getStock();
 
         return TravelerStockmonDto.builder()
-                .id(stockmon.getId())
+                .id(stock.getId())
                 .name(stock.getName())
                 .imgUrl(stockmon.getImgUrl())
                 .catchCount(travelerStockmon.getStockmonCount())
