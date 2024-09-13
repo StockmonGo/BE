@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StockmonRepository extends JpaRepository<Stockmon, Long> {
-    @Query("SELECT new com.pda.core.dto.GetStockmonDetailFromDbDto(" +
+    @Query("SELECT new com.pda.core.dto.stockmon.stockbook.GetStockmonDetailFromDbDto(" +
             "    s.id, " +
             "    s.name, " +
             "    s.description, " +

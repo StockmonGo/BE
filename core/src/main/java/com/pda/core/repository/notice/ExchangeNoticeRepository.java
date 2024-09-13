@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExchangeNoticeRepository extends JpaRepository<ExchangeNotice, Long> {
-    @Query("SELECT new com.pda.core.dto.GetStockmonExchangeListResponseDto$StockmonExchange(" +
+    @Query("SELECT new com.pda.core.dto.notice.exchange.GetStockmonExchangeListResponseDto.StockmonExchange(" +
             "e.id, e.sender.id, e.sender.nickname, e.senderStockmon.id, s.name, e.createdAt) " +
             "FROM ExchangeNotice e " +
             "JOIN Stockmon s ON e.senderStockmon.id = s.id " +

@@ -5,17 +5,17 @@ import lombok.Getter;
 @Getter
 public class GetStockmonDetailFromDbDto {
 
-    private Long stockmonId;
-    private String stockmonName;
-    private String description;
-    private String imgUrl;
-    private Long stockType;
-    private Double stockmonAveragePrice;
-    private String stockTypeName;
-    private String stockName;
-    private String stockCode;
-    private Long catchCount;
-    private String stockMarket;
+    private final Long stockmonId;
+    private final String stockmonName;
+    private final String description;
+    private final String imgUrl;
+    private final Long stockType;
+    private final Double stockmonAveragePrice;
+    private final String stockTypeName;
+    private final String stockName;
+    private final String stockCode;
+    private final Long catchCount;
+    private final String stockMarket;
 
     public GetStockmonDetailFromDbDto(Long stockmonId, String stockmonName, String description, String imgUrl,
                                       Long stockType, Double stockmonAveragePrice, String stockTypeName,
