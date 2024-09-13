@@ -1,9 +1,9 @@
 package com.pda.core.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pda.core.dto.CustomUserDetailDto;
-import com.pda.core.dto.SignInRequestDto;
-import com.pda.core.exception.RequestBodyException;
+import com.pda.core.dto.traveler.user.CustomUserDetailDto;
+import com.pda.core.dto.traveler.user.SignInRequestDto;
+import com.pda.core.exception.SecurityFilterException;
 import com.pda.core.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,7 +42,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new RequestBodyException();
+            throw new SecurityFilterException();
         }
     }
 
